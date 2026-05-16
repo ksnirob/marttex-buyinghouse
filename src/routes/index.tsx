@@ -9,6 +9,7 @@ import denim from "@/assets/product-denim.jpg";
 import woven from "@/assets/product-woven.jpg";
 import kids from "@/assets/product-kids.jpg";
 import { SiteLayout } from "@/components/site/Layout";
+import { BgShapes } from "@/components/site/BgShapes";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -43,6 +44,7 @@ function Index() {
     <SiteLayout>
       {/* HERO */}
       <section className="relative overflow-hidden">
+        <BgShapes variant="hero" />
         <div className="container-x grid items-center gap-12 py-16 md:py-24 lg:grid-cols-2 lg:py-32">
           <div>
             <p className="eyebrow"><span className="h-px w-8 bg-muted-foreground/60" /> Bangladesh buying house</p>
