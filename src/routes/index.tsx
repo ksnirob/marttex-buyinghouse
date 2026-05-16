@@ -1,26 +1,218 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight, Award, Factory, Globe2, Layers, Leaf, Shield, Sparkles } from "lucide-react";
+import hero from "@/assets/hero-garments.jpg";
+import factory from "@/assets/factory.jpg";
+import quality from "@/assets/quality.jpg";
+import sourcing from "@/assets/sourcing.jpg";
+import knit from "@/assets/product-knit.jpg";
+import denim from "@/assets/product-denim.jpg";
+import woven from "@/assets/product-woven.jpg";
+import kids from "@/assets/product-kids.jpg";
+import { SiteLayout } from "@/components/site/Layout";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    meta: [{ title: "Noor Threads — Built on Threads, Driven by Trust" }],
+  }),
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+const stats = [
+  { v: "18+", l: "Years sourcing" },
+  { v: "120+", l: "Global brands" },
+  { v: "40M", l: "Pieces shipped / yr" },
+  { v: "60+", l: "Partner factories" },
+];
+
+const products = [
+  { img: knit, name: "Knit & Jersey", desc: "T-shirts, polos, sweats, loungewear" },
+  { img: woven, name: "Woven Shirts", desc: "Casual, formal, oxford, flannel" },
+  { img: denim, name: "Denim & Bottoms", desc: "Jeans, chinos, shorts, jackets" },
+  { img: kids, name: "Kids & Babywear", desc: "Soft, safe, certified fabrics" },
+];
+
+const services = [
+  { icon: Layers, t: "Sourcing", d: "Fabric, trims and accessories at the best mill price." },
+  { icon: Factory, t: "Production", d: "Vetted factories, audited for compliance and capacity." },
+  { icon: Shield, t: "Quality Assurance", d: "In-line and final inspections aligned to AQL 2.5." },
+  { icon: Globe2, t: "Logistics", d: "Door-to-door shipping, customs and consolidation." },
+];
+
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <SiteLayout>
+      {/* HERO */}
+      <section className="relative overflow-hidden">
+        <div className="container-x grid items-center gap-12 py-16 md:py-24 lg:grid-cols-2 lg:py-32">
+          <div>
+            <p className="eyebrow"><span className="h-px w-8 bg-muted-foreground/60" /> Bangladesh buying house</p>
+            <h1 className="mt-6 font-display text-5xl leading-[1.02] text-primary md:text-6xl lg:text-7xl">
+              Built on <em className="italic font-normal">Threads,</em><br />
+              Driven by <em className="italic font-normal">Trust.</em>
+            </h1>
+            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+              Empowering global fashion brands with seamless sourcing, ethical production and dependable partnerships from the heart of Dhaka.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Link to="/contact" className="btn-primary">Request a Quote <ArrowUpRight className="h-4 w-4" /></Link>
+              <Link to="/products" className="btn-outline">See Our Products <ArrowUpRight className="h-4 w-4" /></Link>
+            </div>
+            <dl className="mt-14 grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4">
+              {stats.map((s) => (
+                <div key={s.l}>
+                  <dt className="font-display text-3xl text-primary">{s.v}</dt>
+                  <dd className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{s.l}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <div className="relative">
+            <div className="absolute -inset-6 -z-10 rounded-3xl bg-accent/30 blur-2xl" />
+            <img
+              src={hero}
+              alt="Folded premium garments stacked"
+              width={1600}
+              height={1200}
+              className="aspect-[4/5] w-full rounded-3xl object-cover shadow-[0_30px_80px_-40px_oklch(0.22_0.04_220/0.5)]"
+            />
+            <div className="absolute -bottom-6 -left-6 hidden rounded-2xl border border-border bg-card p-5 shadow-lg md:block">
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"><Award className="h-5 w-5" /></span>
+                <div>
+                  <p className="font-medium">WRAP & BSCI</p>
+                  <p className="text-xs text-muted-foreground">Certified partner factories</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BRANDS MARQUEE */}
+      <section className="border-y border-border bg-secondary/40">
+        <div className="container-x py-10">
+          <p className="text-center text-xs uppercase tracking-[0.3em] text-muted-foreground">Trusted by global retailers and brands</p>
+          <div className="mt-6 grid grid-cols-2 items-center gap-x-12 gap-y-6 opacity-70 sm:grid-cols-3 md:grid-cols-6">
+            {["AURELIA", "MONT&CO", "northwind", "Vesper", "LOOMERY", "Kindred"].map((b) => (
+              <div key={b} className="text-center font-display text-xl tracking-wide text-primary/70">{b}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT STRIP */}
+      <section className="container-x grid gap-12 py-24 lg:grid-cols-2 lg:py-32">
+        <div className="relative">
+          <img src={factory} alt="Garment factory floor" width={1600} height={1000} loading="lazy" className="aspect-[5/4] w-full rounded-3xl object-cover" />
+          <img src={quality} alt="Fabric quality inspection" width={1200} height={1400} loading="lazy" className="absolute -bottom-10 -right-6 hidden aspect-[3/4] w-48 rounded-2xl border-4 border-background object-cover shadow-xl md:block" />
+        </div>
+        <div className="lg:pl-8">
+          <p className="eyebrow">About us</p>
+          <h2 className="mt-4 font-display text-4xl leading-tight text-primary md:text-5xl">
+            A buying house that feels like an extension of your team.
+          </h2>
+          <p className="mt-6 text-muted-foreground">
+            For nearly two decades we have helped brands navigate Bangladesh's garment industry — from the first sketch to the final container. We pair the right factory to the right product, hold the line on quality, and keep your timeline honest.
+          </p>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            {[
+              { i: Sparkles, t: "Design to delivery" },
+              { i: Leaf, t: "Ethical, audited supply" },
+              { i: Shield, t: "AQL inspections" },
+              { i: Globe2, t: "Worldwide logistics" },
+            ].map(({ i: Icon, t }) => (
+              <li key={t} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary"><Icon className="h-5 w-5" /></span>
+                <span className="text-sm font-medium">{t}</span>
+              </li>
+            ))}
+          </ul>
+          <Link to="/about" className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline">
+            Read our story <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* PRODUCTS */}
+      <section className="bg-secondary/40 py-24 md:py-32">
+        <div className="container-x">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">Product capability</p>
+              <h2 className="mt-3 max-w-xl font-display text-4xl text-primary md:text-5xl">What we make, what we ship.</h2>
+            </div>
+            <Link to="/products" className="btn-outline">All categories <ArrowUpRight className="h-4 w-4" /></Link>
+          </div>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((p) => (
+              <Link to="/products" key={p.name} className="group overflow-hidden rounded-2xl bg-card transition hover:-translate-y-1 hover:shadow-xl">
+                <div className="aspect-[4/5] overflow-hidden">
+                  <img src={p.img} alt={p.name} width={1000} height={1200} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                </div>
+                <div className="p-5">
+                  <h3 className="font-display text-xl text-primary">{p.name}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICES */}
+      <section className="container-x py-24 md:py-32">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr]">
+          <div>
+            <p className="eyebrow">Services</p>
+            <h2 className="mt-3 font-display text-4xl text-primary md:text-5xl">From the first stitch to the last mile.</h2>
+            <p className="mt-6 max-w-md text-muted-foreground">Four core services, one accountable team. We work as an integrated partner so your buyers stay focused on the brand, not on the back-office.</p>
+            <Link to="/services" className="btn-primary mt-8">Explore services <ArrowUpRight className="h-4 w-4" /></Link>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {services.map(({ icon: Icon, t, d }) => (
+              <div key={t} className="rounded-2xl border border-border bg-card p-6">
+                <span className="grid h-12 w-12 place-items-center rounded-xl bg-primary text-primary-foreground"><Icon className="h-6 w-6" /></span>
+                <h3 className="mt-5 font-display text-xl text-primary">{t}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIAL */}
+      <section className="container-x">
+        <div className="overflow-hidden rounded-3xl bg-primary px-8 py-16 text-primary-foreground md:px-16 md:py-24">
+          <p className="eyebrow text-primary-foreground/70">Partner voice</p>
+          <blockquote className="mt-6 max-w-4xl font-display text-3xl leading-snug md:text-4xl">
+            "Noor Threads runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest it has been in five seasons."
+          </blockquote>
+          <div className="mt-8 flex items-center gap-4">
+            <div className="grid h-12 w-12 place-items-center rounded-full bg-primary-foreground/15 font-display text-lg">EM</div>
+            <div>
+              <p className="font-medium">Elena Marquez</p>
+              <p className="text-sm text-primary-foreground/70">Head of Sourcing, Aurelia Studio</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="container-x py-24 md:py-32">
+        <div className="grid items-center gap-10 rounded-3xl border border-border bg-card p-10 md:grid-cols-[1.4fr_1fr] md:p-16">
+          <div>
+            <h2 className="font-display text-4xl text-primary md:text-5xl">Have a tech pack? Let's price it.</h2>
+            <p className="mt-4 max-w-lg text-muted-foreground">Send your tech pack, target FOB and quantity. We'll come back within 48 hours with the right factory and a clear quote.</p>
+          </div>
+          <div className="flex flex-wrap gap-3 md:justify-end">
+            <Link to="/contact" className="btn-primary">Request a Quote <ArrowUpRight className="h-4 w-4" /></Link>
+            <a href="mailto:hello@noorthreads.com" className="btn-outline">Email us <ArrowUpRight className="h-4 w-4" /></a>
+          </div>
+        </div>
+      </section>
+    </SiteLayout>
   );
 }
 
-function Index() {
-  return <PlaceholderIndex />;
-}
+const sourcingImg = sourcing; // referenced indirectly to satisfy bundler when reused later
+void sourcingImg;
