@@ -72,16 +72,14 @@ function Products() {
         />
       </div>
 
-      {active === "all" && (
-        <section className="sticky top-20 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
-          <div className="container-x flex gap-2 overflow-x-auto py-4">
-            <FilterPill label="All" active={active === "all"} onClick={() => setActive("all")} count={cats.reduce((a, c) => a + c.items.length, 0)} />
-            {cats.map((c) => (
-              <FilterPill key={c.key} label={c.name} active={active === c.key} onClick={() => setActive(c.key)} count={c.items.length} />
-            ))}
-          </div>
-        </section>
-      )}
+      <section className="sticky top-20 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
+        <div className="container-x flex gap-2 overflow-x-auto py-4">
+          <FilterPill label="All" active={active === "all"} onClick={() => setActive("all")} count={cats.reduce((a, c) => a + c.items.length, 0)} />
+          {cats.map((c) => (
+            <FilterPill key={c.key} label={c.name} active={active === c.key} onClick={() => setActive(c.key)} count={c.items.length} />
+          ))}
+        </div>
+      </section>
 
       <section className="relative">
         <BgShapes variant="soft" />

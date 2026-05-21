@@ -22,7 +22,7 @@ function News() {
               <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
                 <span>{p.tag}</span><span>·</span><span>{p.date}</span>
               </div>
-              <h3 className="mt-3 font-display text-2xl leading-tight text-primary">{p.title}</h3>
+              <Link to="/news/$slug" params={{ slug: p.slug }} className="mt-3 block font-display text-2xl leading-tight text-primary hover:underline underline-offset-2">{p.title}</Link>
               <Link to="/news/$slug" params={{ slug: p.slug }} className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-primary">
                 Read article <ArrowUpRight className="h-4 w-4" />
               </Link>
