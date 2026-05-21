@@ -63,17 +63,6 @@ function Index() {
       </section>
 
 
-      {/* BRANDS MARQUEE */}
-      <section className="border-y border-border bg-secondary/40">
-        <div className="container-x py-10">
-          <p className="text-center text-xs uppercase tracking-[0.3em] text-muted-foreground">Trusted by global retailers and brands</p>
-          <div className="mt-6 grid grid-cols-2 items-center gap-x-12 gap-y-6 opacity-70 sm:grid-cols-3 md:grid-cols-6">
-            {["AURELIA", "MONT&CO", "northwind", "Vesper", "LOOMERY", "Kindred"].map((b) => (
-              <div key={b} className="text-center font-display text-xl tracking-wide text-primary/70">{b}</div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ABOUT STRIP */}
       <section className="container-x grid gap-12 py-24 lg:grid-cols-2 lg:py-32">
