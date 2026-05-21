@@ -172,16 +172,71 @@ function Index() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="container-x py-24 md:py-32">
-        <div className="grid items-center gap-10 rounded-3xl border border-border bg-card p-10 md:grid-cols-[1.4fr_1fr] md:p-16">
-          <div>
-            <h2 className="font-display text-4xl text-primary md:text-5xl">Have a tech pack? Let's price it.</h2>
-            <p className="mt-4 max-w-lg text-muted-foreground">Send your tech pack, target FOB and quantity. We'll come back within 48 hours with the right factory and a clear quote.</p>
+      {/* NEWS / INSIGHTS — editorial */}
+      <section className="relative overflow-hidden py-24 md:py-32">
+        <BgShapes variant="soft" />
+        <div className="container-x">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">News & insights</p>
+              <h2 className="mt-3 max-w-xl font-display text-4xl text-primary md:text-5xl">From the floor, to your feed.</h2>
+            </div>
+            <Link to="/news" className="btn-outline">All articles <ArrowUpRight className="h-4 w-4" /></Link>
           </div>
-          <div className="flex flex-wrap gap-3 md:justify-end">
-            <Link to="/contact" className="btn-primary">Request a Quote <ArrowUpRight className="h-4 w-4" /></Link>
-            <a href="mailto:hello@noorthreads.com" className="btn-outline">Email us <ArrowUpRight className="h-4 w-4" /></a>
+
+          <div className="mt-14 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+            {/* Feature post */}
+            <Link to="/news" className="group relative block overflow-hidden rounded-3xl border border-border bg-card">
+              <div className="aspect-[16/11] overflow-hidden">
+                <img src={factory} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent p-8 text-primary-foreground md:p-10">
+                <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-primary-foreground/80">
+                  <span className="rounded-full bg-primary-foreground/15 px-3 py-1 backdrop-blur">Industry</span>
+                  <span className="inline-flex items-center gap-1.5"><Calendar className="h-3 w-3" /> April 2026</span>
+                </div>
+                <h3 className="mt-4 max-w-2xl font-display text-3xl leading-tight md:text-4xl">Bangladesh RMG exports cross USD 50B — what it means for buyers</h3>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium">Read story <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+              </div>
+            </Link>
+
+            {/* Side posts */}
+            <div className="flex flex-col gap-6">
+              {[
+                { img: sourcing, tag: "Sourcing", date: "March 2026", title: "Cotton vs. recycled blends: a cost & quality look at SS27" },
+                { img: quality, tag: "Quality", date: "February 2026", title: "Inside our QA protocol — defect rate cut by 38%" },
+                { img: knit, tag: "Capability", date: "January 2026", title: "Knitwear capacity: what 12M pieces a season looks like" },
+              ].map((p) => (
+                <Link key={p.title} to="/news" className="group grid grid-cols-[140px_1fr] gap-5 overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-0.5 hover:shadow-lg sm:grid-cols-[180px_1fr]">
+                  <div className="overflow-hidden">
+                    <img src={p.img} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  </div>
+                  <div className="flex flex-col justify-center py-4 pr-5">
+                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                      <span>{p.tag}</span><span className="text-primary/30">·</span><span>{p.date}</span>
+                    </div>
+                    <h3 className="mt-2 font-display text-lg leading-snug text-primary md:text-xl">{p.title}</h3>
+                    <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-primary opacity-70 transition group-hover:opacity-100">Read more <ArrowUpRight className="h-3.5 w-3.5" /></span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="container-x pb-24 md:pb-32">
+        <div className="relative grid items-center gap-10 overflow-hidden rounded-3xl bg-primary p-10 text-primary-foreground md:grid-cols-[1.4fr_1fr] md:p-16">
+          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
+          <div className="absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-primary-foreground/10 blur-3xl" />
+          <div className="relative">
+            <h2 className="font-display text-4xl md:text-5xl">Have a tech pack? Let's price it.</h2>
+            <p className="mt-4 max-w-lg text-primary-foreground/80">Send your tech pack, target FOB and quantity. We'll come back within 48 hours with the right factory and a clear quote.</p>
+          </div>
+          <div className="relative flex flex-wrap gap-3 md:justify-end">
+            <Link to="/contact" className="inline-flex items-center gap-2 rounded-full bg-primary-foreground px-6 py-3 text-sm font-medium text-primary transition hover:-translate-y-0.5 hover:shadow-lg">Request a Quote <ArrowUpRight className="h-4 w-4" /></Link>
+            <a href="mailto:hello@noorthreads.com" className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary-foreground/10">Email us <ArrowUpRight className="h-4 w-4" /></a>
           </div>
         </div>
       </section>
@@ -189,5 +244,5 @@ function Index() {
   );
 }
 
-const sourcingImg = sourcing; // referenced indirectly to satisfy bundler when reused later
-void sourcingImg;
+void sourcing;
+
