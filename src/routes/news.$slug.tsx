@@ -102,7 +102,7 @@ function NewsDetail() {
         </div>
       </div>
 
-      <article className="container-x max-w-3xl py-14">
+      <article className="container-x max-w-4xl py-14">
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground">
           <span className="rounded-full bg-secondary px-3 py-1">{article.tag}</span>
           <span className="inline-flex items-center gap-1.5"><Calendar className="h-3 w-3" /> {article.date}</span>
