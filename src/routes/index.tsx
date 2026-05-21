@@ -42,53 +42,26 @@ const services = [
 function Index() {
   return (
     <SiteLayout>
-      {/* HERO */}
+      {/* HERO SLIDER */}
       <section className="relative overflow-hidden">
         <BgShapes variant="hero" />
-        <div className="container-x grid items-center gap-12 py-16 md:py-24 lg:grid-cols-2 lg:py-32">
-          <div>
-            <p className="eyebrow"><span className="h-px w-8 bg-muted-foreground/60" /> Bangladesh buying house</p>
-            <h1 className="mt-6 font-display text-5xl leading-[1.02] text-primary md:text-6xl lg:text-7xl">
-              Built on <em className="italic font-normal">Threads,</em><br />
-              Driven by <em className="italic font-normal">Trust.</em>
-            </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
-              Empowering global fashion brands with seamless sourcing, ethical production and dependable partnerships from the heart of Dhaka.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <Link to="/contact" className="btn-primary">Request a Quote <ArrowUpRight className="h-4 w-4" /></Link>
-              <Link to="/products" className="btn-outline">See Our Products <ArrowUpRight className="h-4 w-4" /></Link>
-            </div>
-            <dl className="mt-14 grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4">
-              {stats.map((s) => (
-                <div key={s.l}>
-                  <dt className="font-display text-3xl text-primary">{s.v}</dt>
-                  <dd className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{s.l}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-          <div className="relative">
-            <div className="absolute -inset-6 -z-10 rounded-3xl bg-accent/30 blur-2xl" />
-            <img
-              src={hero}
-              alt="Folded premium garments stacked"
-              width={1600}
-              height={1200}
-              className="aspect-[4/5] w-full rounded-3xl object-cover shadow-[0_30px_80px_-40px_oklch(0.22_0.04_220/0.5)]"
-            />
-            <div className="absolute -bottom-6 -left-6 hidden rounded-2xl border border-border bg-card p-5 shadow-lg md:block">
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"><Award className="h-5 w-5" /></span>
-                <div>
-                  <p className="font-medium">WRAP & BSCI</p>
-                  <p className="text-xs text-muted-foreground">Certified partner factories</p>
-                </div>
+        <HeroSlider />
+        <div className="container-x pb-16">
+          <dl className="grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.l}>
+                <dt className="font-display text-3xl text-primary">{s.v}</dt>
+                <dd className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{s.l}</dd>
               </div>
-            </div>
+            ))}
+          </dl>
+          <div className="mt-8 flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"><Award className="h-5 w-5" /></span>
+            <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">WRAP & BSCI</span> certified partner factories</p>
           </div>
         </div>
       </section>
+
 
       {/* BRANDS MARQUEE */}
       <section className="border-y border-border bg-secondary/40">
