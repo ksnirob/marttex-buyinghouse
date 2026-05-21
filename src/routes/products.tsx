@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, SiteLayout } from "@/components/site/Layout";
 import { BgShapes } from "@/components/site/BgShapes";
 import { Lightbox, useLightbox } from "@/components/site/Lightbox";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ZoomIn } from "lucide-react";
 
 import knit from "@/assets/product-knit.jpg";
@@ -32,17 +32,28 @@ export const Route = createFileRoute("/products")({
 type Cat = { key: string; name: string; items: string[] };
 
 const cats: Cat[] = [
-  { key: "knit",    name: "Knit & Jersey",     items: [tshirt, knit, sweat, polo, hero] },
-  { key: "woven",   name: "Woven Shirts",      items: [shirtBlue, woven, flannel] },
-  { key: "denim",   name: "Denim & Bottoms",   items: [jeans, denim, chino] },
-  { key: "outer",   name: "Outerwear",         items: [puffer, trench] },
-  { key: "kids",    name: "Kids & Babywear",   items: [kidsStripe, kids, baby] },
-  { key: "fabric",  name: "Fabric & Trims",    items: [fabric, sourcing] },
+  { key: "knit",    name: "Knit & Jersey",     items: [tshirt, knit, sweat, polo, hero, tshirt, sweat, polo, knit] },
+  { key: "woven",   name: "Woven Shirts",      items: [shirtBlue, woven, flannel, shirtBlue, flannel, woven, shirtBlue] },
+  { key: "denim",   name: "Denim & Bottoms",   items: [jeans, denim, chino, jeans, chino, denim, jeans, chino] },
+  { key: "outer",   name: "Outerwear",         items: [puffer, trench, puffer, trench, puffer, trench] },
+  { key: "kids",    name: "Kids & Babywear",   items: [kidsStripe, kids, baby, kidsStripe, baby, kids, baby] },
+  { key: "fabric",  name: "Fabric & Trims",    items: [fabric, sourcing, fabric, sourcing, fabric] },
 ];
 
 function Products() {
   const [active, setActive] = useState<string>("all");
   const lb = useLightbox();
+
+  // Read hash on mount + on hashchange (dropdown nav)
+  useEffect(() => {
+    const sync = () => {
+      const h = window.location.hash.replace("#", "");
+      if (h && (h === "all" || cats.some((c) => c.key === h))) setActive(h);
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
 
   const visible = useMemo(() => {
     if (active === "all") return cats;
