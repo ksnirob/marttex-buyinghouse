@@ -10,11 +10,24 @@ import kids from "@/assets/product-kids.jpg";
 import { SiteLayout } from "@/components/site/Layout";
 import { BgShapes } from "@/components/site/BgShapes";
 import { HeroSlider } from "@/components/site/HeroSlider";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import tb01 from "@/assets/brands/tb-01.svg";
+import tb02 from "@/assets/brands/tb-02.svg";
+import tb03 from "@/assets/brands/tb-03.svg";
+import tb04 from "@/assets/brands/tb-04.svg";
+import tb05 from "@/assets/brands/tb-05.svg";
+import tb06 from "@/assets/brands/tb-06.svg";
+import tb07 from "@/assets/brands/tb-07.svg";
+import tb08 from "@/assets/brands/tb-08.svg";
+import tb09 from "@/assets/brands/tb-09.svg";
+import tb10 from "@/assets/brands/tb-10.svg";
+import tb12 from "@/assets/brands/tb-12.svg";
+import tb13 from "@/assets/brands/tb-13.svg";
 
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
-    meta: [{ title: "Noor Threads — Built on Threads, Driven by Trust" }],
+    meta: [{ title: "MartXBD — Built on Threads, Driven by Trust" }],
   }),
 });
 
@@ -145,38 +158,35 @@ function Index() {
       </section>
 
       {/* TOP BRANDS */}
-      <section className="relative overflow-hidden border-y border-border bg-secondary/40 py-20 md:py-28">
-        <BgShapes variant="soft" />
-        <div className="container-x text-center">
-          <p className="eyebrow justify-center">Our partners</p>
-          <h2 className="mt-4 font-display text-4xl text-primary md:text-5xl">Top Brands</h2>
-          <p className="mx-auto mt-5 max-w-2xl text-muted-foreground">
-            We're a trusted buying house connecting global fashion brands with Bangladesh's top garment manufacturers — handling sourcing, sampling, production and shipping under one roof.
-          </p>
-        </div>
+      <section className="border-y border-border bg-white py-16 md:py-24">
+        <div className="container-x">
+          <div className="text-center">
+            <p className="eyebrow justify-center">Trusted by</p>
+            <h2 className="mt-4 font-display text-4xl text-primary md:text-5xl">Top Brands</h2>
+            <p className="mx-auto mt-4 max-w-3xl text-muted-foreground">
+              We connect global fashion brands with Bangladesh's top garment manufacturers — handling sourcing, sampling, production and shipping under one roof.
+            </p>
+          </div>
 
-        {/* Marquee rows */}
-        <div className="mt-14 space-y-8">
-          {[
-            { dir: "left",  items: ["AURELIA", "MONT&CO", "NORTHWIND", "VESPER", "LOOMERY", "KINDRED", "HARLOW", "ATELIER 9"] },
-            { dir: "right", items: ["BRIDGEPORT", "STITCH&CO", "OAKMONT", "RAVEN", "SAINT MARA", "FIELDNOTE", "RIVERA", "NORDEN"] },
-          ].map((row, ri) => (
-            <div key={ri} className="group relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-              <div
-                className="flex w-max gap-14 px-6 will-change-transform"
-                style={{ animation: `marquee-${row.dir} 40s linear infinite` }}
-              >
-                {[...row.items, ...row.items, ...row.items].map((b, i) => (
-                  <div
-                    key={`${b}-${i}`}
-                    className="flex h-20 w-44 shrink-0 items-center justify-center rounded-xl border border-border bg-card px-6 font-display text-xl tracking-[0.15em] text-primary/70 shadow-sm transition hover:scale-105 hover:text-primary hover:shadow-md"
-                  >
-                    {b}
+          <div className="mt-12 space-y-8">
+            {[
+              [tb01, tb02, tb03, tb04, tb05, tb06, tb07],
+              [tb08, tb09, tb10, tb12, tb13],
+            ].map((row, ri) => (
+              <div key={ri} className="flex items-center justify-center gap-10 md:gap-16">
+                {row.map((logo, i) => (
+                  <div key={i} className="flex items-center justify-center px-4 transition-all duration-300 hover:scale-110">
+                    <img
+                      src={logo}
+                      alt=""
+                      loading="lazy"
+                      className="h-20 w-auto max-w-[180px] object-contain"
+                    />
                   </div>
                 ))}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
@@ -216,49 +226,57 @@ function Index() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="relative overflow-hidden bg-primary py-24 text-primary-foreground md:py-32">
-        <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-accent/30 blur-3xl animate-blob" />
-        <div className="absolute -bottom-32 right-0 h-[28rem] w-[28rem] rounded-full bg-primary-foreground/5 blur-3xl animate-blob" style={{ animationDelay: "-6s" }} />
+      <section className="relative overflow-hidden bg-white py-24 md:py-32">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,theme(colors.primary/4),transparent_60%)]" />
 
         <div className="container-x text-center">
-          <p className="eyebrow justify-center text-primary-foreground/70">Partner voices</p>
-          <h2 className="mt-4 font-display text-4xl md:text-5xl">Testimonials</h2>
-          <p className="mx-auto mt-5 max-w-2xl text-primary-foreground/75">
+          <p className="eyebrow justify-center">Partner voices</p>
+          <h2 className="mt-4 font-display text-4xl text-primary md:text-5xl">Testimonials</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-muted-foreground">
             We're not just another buying house — we're your local production partner in Bangladesh, trusted by global fashion brands for reliability, transparency and craft.
           </p>
         </div>
 
-        <div className="container-x mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[
-            { name: "Elena Marquez", role: "Head of Sourcing, Aurelia Studio", initials: "EM", quote: "Noor Threads runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons." },
-            { name: "Tomás Bernal",  role: "Founder, Mont&Co",                 initials: "TB", quote: "From tech pack to FOB in record time. The QA photo reports alone are worth the partnership — we never ship a season blind anymore." },
-            { name: "Priya Anand",   role: "Production Lead, Loomery",          initials: "PA", quote: "Their factory matching is unreal. Knit, denim, outerwear — every program lands with a mill that actually wants to make it well." },
-            { name: "Jonas Weber",   role: "Buyer, Northwind Apparel",          initials: "JW", quote: "Honest costing, no surprises at shipment. That's the part most buying houses fail at, and the part Noor gets exactly right." },
-            { name: "Amara Okafor",  role: "Design Director, Vesper",           initials: "AO", quote: "They speak design as fluently as they speak production. Trims and fabric ideas come back as good as what we briefed." },
-            { name: "Liam Chen",     role: "Operations, Kindred Goods",         initials: "LC", quote: "Three seasons in and they feel like an extension of our team. Calm, accountable, and obsessed with the details." },
-          ].map((t) => (
-            <figure
-              key={t.name}
-              className="group relative flex flex-col rounded-2xl bg-primary-foreground/[0.06] p-7 backdrop-blur transition hover:-translate-y-1 hover:bg-primary-foreground/[0.1]"
-            >
-              <span className="font-display text-6xl leading-none text-accent/80">"</span>
-              <div className="-mt-3 flex gap-0.5 text-accent">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg key={i} viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4"><path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.2 1.3 6L10 14.9 4.6 17.9l1.3-6L1.3 7.7l6.1-.6L10 1.5z" /></svg>
-                ))}
-              </div>
-              <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-primary-foreground/85">
-                {t.quote}
-              </blockquote>
-              <figcaption className="mt-6 flex items-center gap-3 border-t border-primary-foreground/10 pt-5">
-                <div className="grid h-11 w-11 place-items-center rounded-full bg-primary-foreground/15 font-display text-sm">{t.initials}</div>
-                <div>
-                  <p className="font-medium leading-tight">{t.name}</p>
-                  <p className="text-xs text-primary-foreground/65">{t.role}</p>
-                </div>
-              </figcaption>
-            </figure>
-          ))}
+        <div className="container-x mt-14">
+          <Carousel opts={{ align: "start", loop: true }} className="w-full">
+            <CarouselContent className="-ml-5">
+              {[
+                { name: "Elena Marquez", role: "Head of Sourcing, Aurelia Studio", initials: "EM", quote: "MartXBD runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons." },
+                { name: "Tomás Bernal",  role: "Founder, Mont&Co",                 initials: "TB", quote: "From tech pack to FOB in record time. The QA photo reports alone are worth the partnership — we never ship a season blind anymore." },
+                { name: "Priya Anand",   role: "Production Lead, Loomery",          initials: "PA", quote: "Their factory matching is unreal. Knit, denim, outerwear — every program lands with a mill that actually wants to make it well." },
+                { name: "Jonas Weber",   role: "Buyer, Northwind Apparel",          initials: "JW", quote: "Honest costing, no surprises at shipment. That's the part most buying houses fail at, and the part MartXBD gets exactly right." },
+                { name: "Amara Okafor",  role: "Design Director, Vesper",           initials: "AO", quote: "They speak design as fluently as they speak production. Trims and fabric ideas come back as good as what we briefed." },
+                { name: "Liam Chen",     role: "Operations, Kindred Goods",         initials: "LC", quote: "Three seasons in and they feel like an extension of our team. Calm, accountable, and obsessed with the details." },
+              ].map((t) => (
+                <CarouselItem key={t.name} className="pl-5 md:basis-1/2 lg:basis-1/3">
+                  <figure className="flex h-full flex-col rounded-2xl border border-border bg-white p-7 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                    <span className="font-display text-5xl leading-none text-primary/20">"</span>
+                    <div className="-mt-2 flex gap-0.5 text-amber-400">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <svg key={i} viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                          <path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.2 1.3 6L10 14.9 4.6 17.9l1.3-6L1.3 7.7l6.1-.6L10 1.5z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-foreground/80">
+                      {t.quote}
+                    </blockquote>
+                    <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
+                      <div className="grid h-11 w-11 place-items-center rounded-full bg-primary/10 font-display text-sm text-primary">{t.initials}</div>
+                      <div>
+                        <p className="font-medium leading-tight text-foreground">{t.name}</p>
+                        <p className="text-xs text-muted-foreground">{t.role}</p>
+                      </div>
+                    </figcaption>
+                  </figure>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="mt-8 flex justify-center gap-3">
+              <CarouselPrevious className="relative left-auto top-auto translate-y-0 h-11 w-11 rounded-full border-border bg-white shadow-md hover:bg-primary hover:text-primary-foreground hover:border-primary" />
+              <CarouselNext className="relative right-auto top-auto translate-y-0 h-11 w-11 rounded-full border-border bg-white shadow-md hover:bg-primary hover:text-primary-foreground hover:border-primary" />
+            </div>
+          </Carousel>
         </div>
       </section>
 
@@ -277,28 +295,28 @@ function Index() {
 
           <div className="mt-14 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
             {/* Feature post */}
-            <Link to="/news" className="group relative block overflow-hidden rounded-3xl border border-border bg-card">
+            <Link to="/news/$slug" params={{ slug: "bangladesh-rmg-exports" }} className="group relative block overflow-hidden rounded-3xl border border-border bg-card">
               <div className="aspect-[16/11] overflow-hidden">
                 <img src={factory} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110" />
               </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent p-8 text-primary-foreground md:p-10">
-                <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-primary-foreground/80">
-                  <span className="rounded-full bg-primary-foreground/15 px-3 py-1 backdrop-blur">Industry</span>
+              <div className="p-8 md:p-10">
+                <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+                  <span className="rounded-full bg-secondary px-3 py-1">Industry</span>
                   <span className="inline-flex items-center gap-1.5"><Calendar className="h-3 w-3" /> April 2026</span>
                 </div>
-                <h3 className="mt-4 max-w-2xl font-display text-3xl leading-tight md:text-4xl">Bangladesh RMG exports cross USD 50B — what it means for buyers</h3>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium">Read story <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+                <h3 className="mt-4 max-w-2xl font-display text-3xl leading-tight text-primary md:text-4xl">Bangladesh RMG exports cross USD 50B — what it means for buyers</h3>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-primary">Read story <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
               </div>
             </Link>
 
             {/* Side posts */}
             <div className="flex flex-col gap-6">
               {[
-                { img: sourcing, tag: "Sourcing", date: "March 2026", title: "Cotton vs. recycled blends: a cost & quality look at SS27" },
-                { img: quality, tag: "Quality", date: "February 2026", title: "Inside our QA protocol — defect rate cut by 38%" },
-                { img: knit, tag: "Capability", date: "January 2026", title: "Knitwear capacity: what 12M pieces a season looks like" },
+                { slug: "cotton-recycled-blends", img: sourcing, tag: "Sourcing", date: "March 2026", title: "Cotton vs. recycled blends: a cost & quality look at SS27" },
+                { slug: "qa-protocol",            img: quality,  tag: "Quality",  date: "February 2026", title: "Inside our QA protocol — defect rate cut by 38%" },
+                { slug: "knitwear-capacity",      img: knit,     tag: "Capability", date: "January 2026", title: "Knitwear capacity: what 12M pieces a season looks like" },
               ].map((p) => (
-                <Link key={p.title} to="/news" className="group grid grid-cols-[140px_1fr] gap-5 overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-0.5 hover:shadow-lg sm:grid-cols-[180px_1fr]">
+                <Link key={p.slug} to="/news/$slug" params={{ slug: p.slug }} className="group grid grid-cols-[140px_1fr] gap-5 overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-0.5 hover:shadow-lg sm:grid-cols-[180px_1fr]">
                   <div className="overflow-hidden">
                     <img src={p.img} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   </div>
@@ -327,7 +345,7 @@ function Index() {
           </div>
           <div className="relative flex flex-wrap gap-3 md:justify-end">
             <Link to="/contact" className="inline-flex items-center gap-2 rounded-full bg-primary-foreground px-6 py-3 text-sm font-medium text-primary transition hover:-translate-y-0.5 hover:shadow-lg">Request a Quote <ArrowUpRight className="h-4 w-4" /></Link>
-            <a href="mailto:hello@noorthreads.com" className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary-foreground/10">Email us <ArrowUpRight className="h-4 w-4" /></a>
+            <a href="mailto:hello@martxbd.com" className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary-foreground/10">Email us <ArrowUpRight className="h-4 w-4" /></a>
           </div>
         </div>
       </section>

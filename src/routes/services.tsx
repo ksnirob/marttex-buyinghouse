@@ -4,7 +4,7 @@ import { Boxes, ClipboardCheck, Factory, Globe2, Layers, Palette, Ruler, ShieldC
 
 export const Route = createFileRoute("/services")({
   component: Services,
-  head: () => ({ meta: [{ title: "Services — Noor Threads" }, { name: "description", content: "Sourcing, sampling, production, QA, compliance and logistics services." }] }),
+  head: () => ({ meta: [{ title: "Services — MartXBD" }, { name: "description", content: "Sourcing, sampling, production, QA, compliance and logistics services." }] }),
 });
 
 const items = [

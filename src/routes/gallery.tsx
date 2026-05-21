@@ -11,7 +11,7 @@ import kids from "@/assets/product-kids.jpg";
 
 export const Route = createFileRoute("/gallery")({
   component: Gallery,
-  head: () => ({ meta: [{ title: "Gallery — Noor Threads" }] }),
+  head: () => ({ meta: [{ title: "Gallery — MartXBD" }] }),
 });
 
 const imgs = [hero, factory, quality, sourcing, knit, denim, woven, kids];

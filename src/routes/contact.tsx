@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/contact")({
   component: Contact,
-  head: () => ({ meta: [{ title: "Contact — Noor Threads" }, { name: "description", content: "Request a quote or get in touch with our Dhaka team." }] }),
+  head: () => ({ meta: [{ title: "Contact — MartXBD" }, { name: "description", content: "Request a quote or get in touch with our Dhaka team." }] }),
 });
 
 function Contact() {
@@ -52,7 +52,7 @@ function Contact() {
             <ul className="mt-5 space-y-4 text-sm text-muted-foreground">
               <li className="flex items-start gap-3"><MapPin className="mt-0.5 h-5 w-5 text-primary" /> House 24, Road 11, Banani, Dhaka 1213, Bangladesh</li>
               <li className="flex items-start gap-3"><Phone className="mt-0.5 h-5 w-5 text-primary" /> +880 1700 000 000</li>
-              <li className="flex items-start gap-3"><Mail className="mt-0.5 h-5 w-5 text-primary" /> hello@noorthreads.com</li>
+              <li className="flex items-start gap-3"><Mail className="mt-0.5 h-5 w-5 text-primary" /> hello@martxbd.com</li>
             </ul>
           </div>
           <div className="rounded-3xl bg-primary p-8 text-primary-foreground">

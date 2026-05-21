@@ -16,6 +16,10 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductsIndexRouteImport } from './routes/products.index'
+import { Route as NewsIndexRouteImport } from './routes/news.index'
+import { Route as ProductsCategoryRouteImport } from './routes/products.$category'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -52,24 +56,50 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsIndexRoute = ProductsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProductsRoute,
+} as any)
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => NewsRoute,
+} as any)
+const ProductsCategoryRoute = ProductsCategoryRouteImport.update({
+  id: '/$category',
+  path: '/$category',
+  getParentRoute: () => ProductsRoute,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NewsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
-  '/news': typeof NewsRoute
-  '/products': typeof ProductsRoute
+  '/news': typeof NewsRouteWithChildren
+  '/products': typeof ProductsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/products/$category': typeof ProductsCategoryRoute
+  '/news/': typeof NewsIndexRoute
+  '/products/': typeof ProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
-  '/news': typeof NewsRoute
-  '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/products/$category': typeof ProductsCategoryRoute
+  '/news': typeof NewsIndexRoute
+  '/products': typeof ProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +107,13 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
-  '/news': typeof NewsRoute
-  '/products': typeof ProductsRoute
+  '/news': typeof NewsRouteWithChildren
+  '/products': typeof ProductsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/products/$category': typeof ProductsCategoryRoute
+  '/news/': typeof NewsIndexRoute
+  '/products/': typeof ProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,15 +125,21 @@ export interface FileRouteTypes {
     | '/news'
     | '/products'
     | '/services'
+    | '/news/$slug'
+    | '/products/$category'
+    | '/news/'
+    | '/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/contact'
     | '/gallery'
+    | '/services'
+    | '/news/$slug'
+    | '/products/$category'
     | '/news'
     | '/products'
-    | '/services'
   id:
     | '__root__'
     | '/'
@@ -109,6 +149,10 @@ export interface FileRouteTypes {
     | '/news'
     | '/products'
     | '/services'
+    | '/news/$slug'
+    | '/products/$category'
+    | '/news/'
+    | '/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -116,8 +160,8 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
-  NewsRoute: typeof NewsRoute
-  ProductsRoute: typeof ProductsRoute
+  NewsRoute: typeof NewsRouteWithChildren
+  ProductsRoute: typeof ProductsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
 }
 
@@ -172,18 +216,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/products/': {
+      id: '/products/'
+      path: '/'
+      fullPath: '/products/'
+      preLoaderRoute: typeof ProductsIndexRouteImport
+      parentRoute: typeof ProductsRoute
+    }
+    '/news/': {
+      id: '/news/'
+      path: '/'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
+      parentRoute: typeof NewsRoute
+    }
+    '/products/$category': {
+      id: '/products/$category'
+      path: '/$category'
+      fullPath: '/products/$category'
+      preLoaderRoute: typeof ProductsCategoryRouteImport
+      parentRoute: typeof ProductsRoute
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof NewsRoute
+    }
   }
 }
+
+interface NewsRouteChildren {
+  NewsSlugRoute: typeof NewsSlugRoute
+  NewsIndexRoute: typeof NewsIndexRoute
+}
+
+const NewsRouteChildren: NewsRouteChildren = {
+  NewsSlugRoute: NewsSlugRoute,
+  NewsIndexRoute: NewsIndexRoute,
+}
+
+const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
+
+interface ProductsRouteChildren {
+  ProductsCategoryRoute: typeof ProductsCategoryRoute
+  ProductsIndexRoute: typeof ProductsIndexRoute
+}
+
+const ProductsRouteChildren: ProductsRouteChildren = {
+  ProductsCategoryRoute: ProductsCategoryRoute,
+  ProductsIndexRoute: ProductsIndexRoute,
+}
+
+const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
+  ProductsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
-  NewsRoute: NewsRoute,
-  ProductsRoute: ProductsRoute,
+  NewsRoute: NewsRouteWithChildren,
+  ProductsRoute: ProductsRouteWithChildren,
   ServicesRoute: ServicesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

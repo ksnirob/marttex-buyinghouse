@@ -3,13 +3,13 @@ import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const productCats = [
-  { hash: "all", label: "All Products" },
-  { hash: "knit", label: "Knit & Jersey" },
-  { hash: "woven", label: "Woven Shirts" },
-  { hash: "denim", label: "Denim & Bottoms" },
-  { hash: "outer", label: "Outerwear" },
-  { hash: "kids", label: "Kids & Babywear" },
-  { hash: "fabric", label: "Fabric & Trims" },
+  { key: "all",    label: "All Products" },
+  { key: "knit",   label: "Knit & Jersey" },
+  { key: "woven",  label: "Woven Shirts" },
+  { key: "denim",  label: "Denim & Bottoms" },
+  { key: "outer",  label: "Outerwear" },
+  { key: "kids",   label: "Kids & Babywear" },
+  { key: "fabric", label: "Fabric & Trims" },
 ] as const;
 
 const links = [
@@ -27,8 +27,8 @@ export function Nav() {
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container-x flex h-20 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground font-display text-lg">N</span>
-          <span className="font-display text-lg tracking-tight text-primary">Noor Threads</span>
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground font-display text-lg">M</span>
+          <span className="font-display text-lg tracking-tight text-primary">MartXBD</span>
         </Link>
         <nav className="hidden items-center gap-8 lg:flex">
           <Link to="/" className="text-sm text-foreground/80 transition hover:text-primary" activeProps={{ className: "text-primary font-medium" }} activeOptions={{ exact: true }}>Home</Link>
@@ -47,15 +47,25 @@ export function Nav() {
               <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
                 <ul className="p-2">
                   {productCats.map((c) => (
-                    <li key={c.hash}>
-                      <Link
-                        to="/products"
-                        hash={c.hash}
-                        className="flex items-center justify-between rounded-lg px-4 py-2.5 text-sm text-foreground/80 transition hover:bg-secondary hover:text-primary"
-                      >
-                        {c.label}
-                        <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100" />
-                      </Link>
+                    <li key={c.key}>
+                      {c.key === "all" ? (
+                        <Link
+                          to="/products"
+                          className="flex items-center justify-between rounded-lg px-4 py-2.5 text-sm text-foreground/80 transition hover:bg-secondary hover:text-primary"
+                        >
+                          {c.label}
+                          <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100" />
+                        </Link>
+                      ) : (
+                        <Link
+                          to="/products/$category"
+                          params={{ category: c.key }}
+                          className="flex items-center justify-between rounded-lg px-4 py-2.5 text-sm text-foreground/80 transition hover:bg-secondary hover:text-primary"
+                        >
+                          {c.label}
+                          <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100" />
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -92,11 +102,17 @@ export function Nav() {
             </button>
             {mobileProducts && (
               <div className="ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
-                {productCats.map((c) => (
-                  <Link key={c.hash} to="/products" hash={c.hash} onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary">
-                    {c.label}
-                  </Link>
-                ))}
+                {productCats.map((c) =>
+                  c.key === "all" ? (
+                    <Link key={c.key} to="/products" onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary">
+                      {c.label}
+                    </Link>
+                  ) : (
+                    <Link key={c.key} to="/products/$category" params={{ category: c.key }} onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary">
+                      {c.label}
+                    </Link>
+                  )
+                )}
               </div>
             )}
             {links.slice(2).map((l) => (

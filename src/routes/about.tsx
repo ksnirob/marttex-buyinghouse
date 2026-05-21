@@ -6,7 +6,7 @@ import { CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
   component: About,
-  head: () => ({ meta: [{ title: "About — Noor Threads" }, { name: "description", content: "Our story, values and team behind Noor Threads buying house." }] }),
+  head: () => ({ meta: [{ title: "About — MartXBD" }, { name: "description", content: "Our story, values and team behind MartXBD buying house." }] }),
 });
 
 const values = [
@@ -22,7 +22,7 @@ function About() {
       <PageHeader
         eyebrow="About"
         title="A small team obsessed with getting your garments right."
-        lead="Founded in 2007 in Dhaka, Noor Threads grew from a two-person merchandising desk into a 40-strong buying house representing brands from London, New York, Berlin and Sydney."
+        lead="Founded in 2007 in Dhaka, MartXBD grew from a two-person merchandising desk into a 40-strong buying house representing brands from London, New York, Berlin and Sydney."
       />
       <section className="container-x grid gap-12 py-24 lg:grid-cols-2">
         <img src={factory} alt="Factory floor" width={1600} height={1000} loading="lazy" className="aspect-[5/4] w-full rounded-3xl object-cover" />

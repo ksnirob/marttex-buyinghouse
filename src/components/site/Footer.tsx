@@ -7,8 +7,8 @@ export function Footer() {
       <div className="container-x grid gap-12 py-20 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-primary-foreground text-primary font-display text-lg">N</span>
-            <span className="font-display text-xl">Noor Threads</span>
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-primary-foreground text-primary font-display text-lg">M</span>
+            <span className="font-display text-xl">MartXBD</span>
           </div>
           <p className="mt-4 max-w-md text-sm text-primary-foreground/70">
             A Bangladesh-based buying house connecting global fashion brands with vetted, ethical garment manufacturers — from sample to shipment.
@@ -29,13 +29,13 @@ export function Footer() {
           <ul className="mt-4 space-y-3 text-sm text-primary-foreground/70">
             <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4" /> House 24, Road 11, Banani, Dhaka 1213</li>
             <li className="flex items-start gap-2"><Phone className="mt-0.5 h-4 w-4" /> +880 1700 000 000</li>
-            <li className="flex items-start gap-2"><Mail className="mt-0.5 h-4 w-4" /> hello@noorthreads.com</li>
+            <li className="flex items-start gap-2"><Mail className="mt-0.5 h-4 w-4" /> hello@martxbd.com</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-primary-foreground/15">
         <div className="container-x flex flex-col items-start justify-between gap-2 py-6 text-xs text-primary-foreground/60 sm:flex-row">
-          <p>© {new Date().getFullYear()} Noor Threads. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} MartXBD. All rights reserved.</p>
           <p>Built on threads. Driven by trust.</p>
         </div>
       </div>
