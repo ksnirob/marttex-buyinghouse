@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Award, Factory, Globe2, Layers, Leaf, Shield, Sparkles } from "lucide-react";
-import hero from "@/assets/hero-garments.jpg";
+import { ArrowUpRight, Award, Factory, Globe2, Layers, Leaf, Shield, Sparkles, Calendar } from "lucide-react";
 import factory from "@/assets/factory.jpg";
 import quality from "@/assets/quality.jpg";
 import sourcing from "@/assets/sourcing.jpg";
@@ -10,6 +9,7 @@ import woven from "@/assets/product-woven.jpg";
 import kids from "@/assets/product-kids.jpg";
 import { SiteLayout } from "@/components/site/Layout";
 import { BgShapes } from "@/components/site/BgShapes";
+import { HeroSlider } from "@/components/site/HeroSlider";
 
 export const Route = createFileRoute("/")({
   component: Index,
