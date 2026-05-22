@@ -147,3 +147,25 @@
   from { transform: translateX(-33.333%); }
   to   { transform: translateX(0); }
 }
+
+/* Hero — Revolt-style word + model transitions */
+@keyframes word-in {
+  0%   { opacity: 0; transform: scale(1.18); filter: blur(14px); letter-spacing: 0.05em; }
+  60%  { opacity: 1; filter: blur(0px); }
+  100% { opacity: 1; transform: scale(1); letter-spacing: -0.04em; }
+}
+@keyframes word-out {
+  0%   { opacity: 1; transform: scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: scale(0.85); filter: blur(20px); }
+}
+@keyframes model-in {
+  0%   { opacity: 0; transform: translateY(40px) scale(0.96); filter: blur(8px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes model-out {
+  0%   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(8px); }
+}
+@keyframes fade-out-soft {
+  to { opacity: 0; transform: translateY(6px); }
+}
