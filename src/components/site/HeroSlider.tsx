@@ -4,21 +4,31 @@ import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import male1 from "@/assets/model-male-1.png";
 import kid from "@/assets/model-kid.png";
 import male2 from "@/assets/model-male-2.png";
+import s2a from "@/assets/model-s2-male1.png";
+import s2k from "@/assets/model-s2-kid.png";
+import s2b from "@/assets/model-s2-male2.png";
+import s3a from "@/assets/model-s3-male1.png";
+import s3k from "@/assets/model-s3-kid.png";
+import s3b from "@/assets/model-s3-male2.png";
+import s4a from "@/assets/model-s4-male1.png";
+import s4k from "@/assets/model-s4-kid.png";
+import s4b from "@/assets/model-s4-male2.png";
 
 type Scene = {
   word: string;
   eyebrow: string;
   desc: string;
+  models: [string, string, string];
 };
 
 const scenes: Scene[] = [
-  { word: "CRAFT",   eyebrow: "Spring / Summer 27",  desc: "Defy the ordinary. Garments engineered with the kind of patience and detail your customer can feel." },
-  { word: "THREADS", eyebrow: "Built in Bangladesh", desc: "Sourced, cut and stitched in audited Dhaka factories — the same hands behind the brands you already wear." },
-  { word: "FAMILY",  eyebrow: "Men · Women · Kids",  desc: "From everyday menswear to soft, safe kidswear — one team, one quality bar, across every category." },
-  { word: "TRUST",   eyebrow: "Eighteen years in",   desc: "120+ global brands. 40M pieces a year. A buying house that ships on time, every season." },
+  { word: "CRAFT",   eyebrow: "Spring / Summer 27",  desc: "Defy the ordinary. Garments engineered with the kind of patience and detail your customer can feel.", models: [male1, kid, male2] },
+  { word: "THREADS", eyebrow: "Built in Bangladesh", desc: "Sourced, cut and stitched in audited Dhaka factories — the same hands behind the brands you already wear.", models: [s2a, s2k, s2b] },
+  { word: "FAMILY",  eyebrow: "Men · Women · Kids",  desc: "From everyday menswear to soft, safe kidswear — one team, one quality bar, across every category.", models: [s3a, s3k, s3b] },
+  { word: "TRUST",   eyebrow: "Eighteen years in",   desc: "120+ global brands. 40M pieces a year. A buying house that ships on time, every season.", models: [s4a, s4k, s4b] },
 ];
 
-const HOLD = 4200; // ms per scene
+const HOLD = 4200;
 
 export function HeroSlider() {
   const [i, setI] = useState(0);
@@ -43,7 +53,6 @@ export function HeroSlider() {
 
   return (
     <div className="relative isolate overflow-hidden bg-[oklch(0.97_0.008_85)]">
-      {/* Background grid floor */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[55%]"
@@ -56,19 +65,14 @@ export function HeroSlider() {
           transformOrigin: "bottom",
         }}
       />
-      {/* Soft warm wash */}
       <div aria-hidden className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
 
-      {/* Top chrome row */}
       <div className="container-x flex items-center justify-between pt-6 text-[10px] uppercase tracking-[0.3em] text-primary/60">
         <span>{s.eyebrow}</span>
-        <span className="hidden sm:inline">Noor / Collection 27</span>
-        <span>{String(i + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
       </div>
 
       <div className="relative">
-        {/* Giant word behind models */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <h1
             key={`w-${i}`}
@@ -96,46 +100,37 @@ export function HeroSlider() {
           </h1>
         </div>
 
-        {/* Three models */}
         <div className="container-x relative grid h-[78vh] min-h-[560px] max-h-[820px] grid-cols-3 items-end gap-2 sm:gap-6">
-          {[
-            { src: male1, delay: 0,    yOffset: 12 },
-            { src: kid,   delay: 120,  yOffset: 4 },
-            { src: male2, delay: 240,  yOffset: 16 },
-          ].map((m, idx) => (
-            <figure
-              key={idx}
-              className="relative flex h-full items-end justify-center"
-              style={{
-                animation: transitioning
-                  ? `model-out 0.55s ease-out ${m.delay}ms forwards`
-                  : `model-in 0.9s cubic-bezier(.2,.7,.2,1) ${m.delay}ms both`,
-              }}
-            >
-              {/* Soft shadow under feet */}
-              <span
-                aria-hidden
-                className="absolute bottom-[6%] left-1/2 h-4 w-3/4 -translate-x-1/2 rounded-full bg-primary/25 blur-2xl"
-              />
-              <img
-                src={m.src}
-                alt=""
-                width={768}
-                height={1536}
-                className="relative z-10 h-[88%] w-auto max-w-full object-contain drop-shadow-[0_30px_40px_oklch(0.22_0.04_220/0.25)] sm:h-[94%]"
-                style={{ transform: `translateY(${m.yOffset}px)` }}
-              />
-              {/* Side labels */}
-              <figcaption className="absolute top-4 hidden text-[10px] uppercase tracking-[0.3em] text-primary/50 md:block"
-                style={idx === 0 ? { left: -20, writingMode: "vertical-rl", transform: "rotate(180deg)" } : idx === 2 ? { right: -20, writingMode: "vertical-rl" } : { left: "50%", transform: "translateX(-50%)" }}
+          {s.models.map((src, idx) => {
+            const delay = idx * 120;
+            const yOffset = idx === 0 ? 12 : idx === 1 ? 4 : 16;
+            return (
+              <figure
+                key={`${i}-${idx}`}
+                className="relative flex h-full items-end justify-center"
+                style={{
+                  animation: transitioning
+                    ? `model-out 0.55s ease-out ${delay}ms forwards`
+                    : `model-in 0.9s cubic-bezier(.2,.7,.2,1) ${delay}ms both`,
+                }}
               >
-                {idx === 0 ? "MENSWEAR — 01" : idx === 1 ? "KIDSWEAR" : "OUTERWEAR — 02"}
-              </figcaption>
-            </figure>
-          ))}
+                <span
+                  aria-hidden
+                  className="absolute bottom-[6%] left-1/2 h-4 w-3/4 -translate-x-1/2 rounded-full bg-primary/25 blur-2xl"
+                />
+                <img
+                  src={src}
+                  alt=""
+                  width={768}
+                  height={1536}
+                  className="relative z-10 h-[88%] w-auto max-w-full object-contain drop-shadow-[0_30px_40px_oklch(0.22_0.04_220/0.25)] sm:h-[94%]"
+                  style={{ transform: `translateY(${yOffset}px)` }}
+                />
+              </figure>
+            );
+          })}
         </div>
 
-        {/* Center copy floating above grid */}
         <div className="pointer-events-none absolute inset-x-0 bottom-[16%] flex justify-center px-6">
           <p
             key={`d-${i}`}
@@ -147,7 +142,6 @@ export function HeroSlider() {
         </div>
       </div>
 
-      {/* Bottom control bar */}
       <div className="container-x flex flex-wrap items-center justify-between gap-4 border-t border-primary/10 py-5">
         <div className="flex items-center gap-2">
           <button onClick={() => go(i - 1)} aria-label="Previous" className="grid h-10 w-10 place-items-center rounded-full border border-primary/20 text-primary transition hover:bg-primary hover:text-primary-foreground">
