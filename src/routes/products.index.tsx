@@ -9,7 +9,6 @@ import knit from "@/assets/product-knit.jpg";
 import denim from "@/assets/product-denim.jpg";
 import woven from "@/assets/product-woven.jpg";
 import kids from "@/assets/product-kids.jpg";
-import hero from "@/assets/hero-garments.jpg";
 import sourcing from "@/assets/sourcing.jpg";
 import tshirt from "@/assets/p-tshirt-white.jpg";
 import sweat from "@/assets/p-sweat-grey.jpg";
@@ -23,6 +22,24 @@ import trench from "@/assets/p-trench-camel.jpg";
 import baby from "@/assets/p-baby-mint.jpg";
 import kidsStripe from "@/assets/p-kids-stripe.jpg";
 import fabric from "@/assets/p-fabric-cotton.jpg";
+import knit01 from "@/assets/p-knit-01.jpg";
+import knit02 from "@/assets/p-knit-02.jpg";
+import knit03 from "@/assets/p-knit-03.jpg";
+import woven01 from "@/assets/p-woven-01.jpg";
+import woven02 from "@/assets/p-woven-02.jpg";
+import woven03 from "@/assets/p-woven-03.jpg";
+import denim01 from "@/assets/p-denim-01.jpg";
+import denim02 from "@/assets/p-denim-02.jpg";
+import denim03 from "@/assets/p-denim-03.jpg";
+import outer01 from "@/assets/p-outer-01.jpg";
+import outer02 from "@/assets/p-outer-02.jpg";
+import outer03 from "@/assets/p-outer-03.jpg";
+import kids01 from "@/assets/p-kids-01.jpg";
+import kids02 from "@/assets/p-kids-02.jpg";
+import kids03 from "@/assets/p-kids-03.jpg";
+import fabric01 from "@/assets/p-fabric-01.jpg";
+import fabric02 from "@/assets/p-fabric-02.jpg";
+import fabric03 from "@/assets/p-fabric-03.jpg";
 
 export const Route = createFileRoute("/products/")({
   component: Products,
@@ -32,12 +49,12 @@ export const Route = createFileRoute("/products/")({
 type Cat = { key: string; name: string; items: string[] };
 
 const cats: Cat[] = [
-  { key: "knit",    name: "Knit & Jersey",     items: [tshirt, knit, sweat, polo, hero, tshirt, sweat, polo, knit] },
-  { key: "woven",   name: "Woven Shirts",      items: [shirtBlue, woven, flannel, shirtBlue, flannel, woven, shirtBlue] },
-  { key: "denim",   name: "Denim & Bottoms",   items: [jeans, denim, chino, jeans, chino, denim, jeans, chino] },
-  { key: "outer",   name: "Outerwear",         items: [puffer, trench, puffer, trench, puffer, trench] },
-  { key: "kids",    name: "Kids & Babywear",   items: [kidsStripe, kids, baby, kidsStripe, baby, kids, baby] },
-  { key: "fabric",  name: "Fabric & Trims",    items: [fabric, sourcing, fabric, sourcing, fabric] },
+  { key: "knit",    name: "Knit & Jersey",     items: [tshirt, knit, sweat, polo, knit01, knit02, knit03] },
+  { key: "woven",   name: "Woven Shirts",      items: [shirtBlue, woven, flannel, woven01, woven02, woven03] },
+  { key: "denim",   name: "Denim & Bottoms",   items: [jeans, denim, chino, denim01, denim02, denim03] },
+  { key: "outer",   name: "Outerwear",         items: [puffer, trench, outer01, outer02, outer03] },
+  { key: "kids",    name: "Kids & Babywear",   items: [kidsStripe, kids, baby, kids01, kids02, kids03] },
+  { key: "fabric",  name: "Fabric & Trims",    items: [fabric, sourcing, fabric01, fabric02, fabric03] },
 ];
 
 function Products() {
