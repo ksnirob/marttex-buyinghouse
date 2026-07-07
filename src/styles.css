@@ -119,6 +119,15 @@
 }
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-fade-up { animation: fade-up 0.8s ease-out both; }
+.section-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.section-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* lightbox */
 @keyframes zoom-in {
@@ -153,6 +162,17 @@
   to { transform: translateX(-50%); }
 }
 .animate-brand-marquee { animation: brand-marquee 24s linear infinite; }
+
+@keyframes country-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes country-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.animate-country-left { animation: country-left 68s linear infinite; }
+.animate-country-right { animation: country-right 68s linear infinite; }
 
 /* Hero — Revolt-style word + model transitions */
 @keyframes word-in {

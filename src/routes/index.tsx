@@ -55,6 +55,25 @@ const services = [
 
 const brandLogos = [tb01, tb02, tb03, tb04, tb05, tb06, tb07, tb08, tb09, tb10, tb12, tb13];
 
+const exportCountries = [
+  { flag: "🇺🇸", name: "United States" },
+  { flag: "🇬🇧", name: "United Kingdom" },
+  { flag: "🇩🇪", name: "Germany" },
+  { flag: "🇫🇷", name: "France" },
+  { flag: "🇳🇱", name: "Netherlands" },
+  { flag: "🇸🇪", name: "Sweden" },
+  { flag: "🇩🇰", name: "Denmark" },
+  { flag: "🇪🇸", name: "Spain" },
+  { flag: "🇮🇹", name: "Italy" },
+  { flag: "🇨🇦", name: "Canada" },
+  { flag: "🇦🇺", name: "Australia" },
+  { flag: "🇯🇵", name: "Japan" },
+  { flag: "🇰🇷", name: "South Korea" },
+  { flag: "🇵🇱", name: "Poland" },
+  { flag: "🇧🇪", name: "Belgium" },
+  { flag: "🇳🇴", name: "Norway" },
+];
+
 function Index() {
   const [testimonialApi, setTestimonialApi] = useState<CarouselApi>();
 
@@ -67,6 +86,50 @@ function Index() {
 
     return () => window.clearInterval(id);
   }, [testimonialApi]);
+
+  useEffect(() => {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>(".section-reveal"));
+
+    if (!("IntersectionObserver" in window)) {
+      sections.forEach((section) => section.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const countryRows = [
+    { code: "us", name: "United States" },
+    { code: "gb", name: "United Kingdom" },
+    { code: "de", name: "Germany" },
+    { code: "fr", name: "France" },
+    { code: "nl", name: "Netherlands" },
+    { code: "se", name: "Sweden" },
+    { code: "dk", name: "Denmark" },
+    { code: "es", name: "Spain" },
+    { code: "it", name: "Italy" },
+    { code: "ca", name: "Canada" },
+    { code: "au", name: "Australia" },
+    { code: "jp", name: "Japan" },
+    { code: "kr", name: "South Korea" },
+    { code: "pl", name: "Poland" },
+    { code: "be", name: "Belgium" },
+    { code: "no", name: "Norway" },
+  ];
 
   return (
     <SiteLayout>
@@ -93,7 +156,7 @@ function Index() {
 
 
       {/* ABOUT STRIP */}
-      <section className="container-x grid gap-12 py-24 lg:grid-cols-2 lg:py-32">
+      <section className="section-reveal container-x grid gap-12 py-24 lg:grid-cols-2 lg:py-32">
         <div className="relative">
           <img src={factory} alt="Garment factory floor" width={1600} height={1000} loading="lazy" className="aspect-[5/4] w-full rounded-3xl object-cover" />
           <img src={quality} alt="Fabric quality inspection" width={1200} height={1400} loading="lazy" className="absolute -bottom-10 -right-6 hidden aspect-[3/4] w-48 rounded-2xl border-4 border-background object-cover shadow-xl md:block" />
@@ -126,7 +189,7 @@ function Index() {
       </section>
 
       {/* PRODUCTS */}
-      <section className="bg-secondary/40 py-24 md:py-32">
+      <section className="section-reveal bg-secondary/40 py-24 md:py-32">
         <div className="container-x">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -151,8 +214,48 @@ function Index() {
         </div>
       </section>
 
+      {/* GLOBAL REACH */}
+      <section className="section-reveal overflow-hidden bg-secondary/60 py-16 md:py-24">
+        <div className="container-x">
+        <div className="overflow-hidden py-12 md:py-16">
+          <div className="px-6 text-center">
+            <p className="eyebrow justify-center rounded-full bg-primary/10 px-4 py-2 text-primary">Global reach</p>
+            <h2 className="mt-5 font-display text-4xl text-primary md:text-5xl">
+              We Export To <span className="text-accent">15+ Countries</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              From North America to Asia-Pacific, our garments reach buyers and retailers across the globe.
+            </p>
+          </div>
+
+          <div className="relative left-1/2 mt-10 w-screen -translate-x-1/2 space-y-4 overflow-hidden">
+            <div className="overflow-hidden">
+              <div className="flex w-max animate-country-left gap-4">
+                {[...countryRows, ...countryRows].map((country, i) => (
+                  <div key={`top-${country.name}-${i}`} className="flex h-14 min-w-44 items-center gap-3 rounded-2xl border border-border bg-white px-5 text-sm font-medium text-foreground shadow-sm">
+                    <img src={`https://flagcdn.com/w40/${country.code}.png`} alt={`${country.name} flag`} width={28} height={20} loading="lazy" className="h-5 w-7 rounded-[2px] object-cover" />
+                    <span>{country.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="overflow-hidden">
+              <div className="flex w-max animate-country-right gap-4">
+                {[...countryRows].reverse().concat([...countryRows].reverse()).map((country, i) => (
+                  <div key={`bottom-${country.name}-${i}`} className="flex h-14 min-w-44 items-center gap-3 rounded-2xl border border-border bg-white px-5 text-sm font-medium text-foreground shadow-sm">
+                    <img src={`https://flagcdn.com/w40/${country.code}.png`} alt={`${country.name} flag`} width={28} height={20} loading="lazy" className="h-5 w-7 rounded-[2px] object-cover" />
+                    <span>{country.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+
       {/* SERVICES */}
-      <section className="container-x py-24 md:py-32">
+      <section className="section-reveal container-x py-24 md:py-32">
         <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr]">
           <div>
             <p className="eyebrow">Services</p>
@@ -173,7 +276,7 @@ function Index() {
       </section>
 
       {/* TOP BRANDS */}
-      <section className="overflow-hidden border-y border-border bg-white py-12 md:py-16">
+      <section className="section-reveal overflow-hidden border-y border-border bg-white py-12 md:py-16">
         <div className="container-x">
           <div className="text-center">
             <p className="eyebrow justify-center">Trusted by</p>
@@ -184,9 +287,9 @@ function Index() {
           </div>
 
           <div className="mx-auto mt-8 w-full max-w-6xl overflow-hidden">
-            <div className="flex w-max animate-brand-marquee items-center gap-8 md:gap-12">
+            <div className="flex w-max animate-brand-marquee items-center gap-3 sm:gap-5 md:gap-8">
               {[...brandLogos, ...brandLogos].map((logo, i) => (
-                <div key={i} className="flex h-20 w-36 shrink-0 items-center justify-center px-2 md:h-24 md:w-48">
+                <div key={i} className="flex h-20 w-28 shrink-0 items-center justify-center px-1 sm:w-32 md:h-24 md:w-44">
                     <img
                       src={logo}
                       alt=""
@@ -201,7 +304,7 @@ function Index() {
       </section>
 
       {/* LET'S WORK TOGETHER */}
-      <section className="container-x py-24 md:py-32">
+      <section className="section-reveal container-x py-24 md:py-32">
         <div className="relative grid items-center overflow-hidden rounded-3xl border border-border bg-secondary/60 md:grid-cols-[1.1fr_1fr]">
           {/* Decorative leaf shape */}
           <svg aria-hidden viewBox="0 0 400 400" className="pointer-events-none absolute right-1/3 top-1/2 hidden h-[28rem] w-[28rem] -translate-y-1/2 text-primary/[0.06] md:block">
@@ -236,7 +339,7 @@ function Index() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="relative overflow-hidden bg-white py-24 md:py-32">
+      <section className="section-reveal relative overflow-hidden bg-white py-24 md:py-32">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,theme(colors.primary/4),transparent_60%)]" />
 
         <div className="container-x text-center">
@@ -292,7 +395,7 @@ function Index() {
 
 
       {/* NEWS / INSIGHTS — editorial */}
-      <section className="relative overflow-hidden py-24 md:py-32">
+      <section className="section-reveal relative overflow-hidden py-24 md:py-32">
         <BgShapes variant="soft" />
         <div className="container-x">
           <div className="flex flex-wrap items-end justify-between gap-6">
@@ -345,7 +448,7 @@ function Index() {
       </section>
 
       {/* CTA */}
-      <section className="container-x pb-24 md:pb-32">
+      <section className="section-reveal container-x pb-24 md:pb-32">
         <div className="relative grid place-items-center gap-10 overflow-hidden rounded-3xl bg-primary p-10 text-center text-primary-foreground md:p-16">
           <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
           <div className="absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-primary-foreground/10 blur-3xl" />
