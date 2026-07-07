@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight, Award, Factory, Globe2, Layers, Leaf, Shield, Sparkles, Calendar } from "lucide-react";
 import factory from "@/assets/factory.jpg";
@@ -10,7 +11,7 @@ import kids from "@/assets/product-kids.jpg";
 import { SiteLayout } from "@/components/site/Layout";
 import { BgShapes } from "@/components/site/BgShapes";
 import { HeroSlider } from "@/components/site/HeroSlider";
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, type CarouselApi } from "@/components/ui/carousel";
 import tb01 from "@/assets/brands/tb-01.svg";
 import tb02 from "@/assets/brands/tb-02.svg";
 import tb03 from "@/assets/brands/tb-03.svg";
@@ -52,14 +53,28 @@ const services = [
   { icon: Globe2, t: "Logistics", d: "Door-to-door shipping, customs and consolidation." },
 ];
 
+const brandLogos = [tb01, tb02, tb03, tb04, tb05, tb06, tb07, tb08, tb09, tb10, tb12, tb13];
+
 function Index() {
+  const [testimonialApi, setTestimonialApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (!testimonialApi) return;
+
+    const id = window.setInterval(() => {
+      testimonialApi.scrollNext();
+    }, 3500);
+
+    return () => window.clearInterval(id);
+  }, [testimonialApi]);
+
   return (
     <SiteLayout>
       {/* HERO SLIDER */}
       <section className="relative overflow-hidden">
         <BgShapes variant="hero" />
         <HeroSlider />
-        <div className="container-x pb-16">
+        {/* <div className="container-x pb-16">
           <dl className="grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4">
             {stats.map((s) => (
               <div key={s.l}>
@@ -72,7 +87,7 @@ function Index() {
             <span className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"><Award className="h-5 w-5" /></span>
             <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">WRAP & BSCI</span> certified partner factories</p>
           </div>
-        </div>
+        </div> */}
       </section>
 
 
@@ -158,7 +173,7 @@ function Index() {
       </section>
 
       {/* TOP BRANDS */}
-      <section className="border-y border-border bg-white py-16 md:py-24">
+      <section className="overflow-hidden border-y border-border bg-white py-12 md:py-16">
         <div className="container-x">
           <div className="text-center">
             <p className="eyebrow justify-center">Trusted by</p>
@@ -168,24 +183,19 @@ function Index() {
             </p>
           </div>
 
-          <div className="mt-12 space-y-8">
-            {[
-              [tb01, tb02, tb03, tb04, tb05, tb06, tb07],
-              [tb08, tb09, tb10, tb12, tb13],
-            ].map((row, ri) => (
-              <div key={ri} className="flex items-center justify-center gap-10 md:gap-16">
-                {row.map((logo, i) => (
-                  <div key={i} className="flex items-center justify-center px-4 transition-all duration-300 hover:scale-110">
+          <div className="mx-auto mt-8 w-full max-w-6xl overflow-hidden">
+            <div className="flex w-max animate-brand-marquee items-center gap-8 md:gap-12">
+              {[...brandLogos, ...brandLogos].map((logo, i) => (
+                <div key={i} className="flex h-20 w-36 shrink-0 items-center justify-center px-2 md:h-24 md:w-48">
                     <img
                       src={logo}
                       alt=""
                       loading="lazy"
-                      className="h-20 w-auto max-w-[180px] object-contain"
+                      className="h-16 w-auto max-w-[130px] object-contain sm:h-20 sm:max-w-[160px] md:h-24 md:max-w-[210px]"
                     />
-                  </div>
-                ))}
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -238,7 +248,7 @@ function Index() {
         </div>
 
         <div className="container-x mt-14">
-          <Carousel opts={{ align: "start", loop: true }} className="w-full">
+          <Carousel opts={{ align: "start", loop: true }} setApi={setTestimonialApi} className="w-full">
             <CarouselContent className="-ml-5">
               {[
                 { name: "Elena Marquez", role: "Head of Sourcing, Aurelia Studio", initials: "EM", quote: "MartXBD runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons." },
@@ -336,16 +346,16 @@ function Index() {
 
       {/* CTA */}
       <section className="container-x pb-24 md:pb-32">
-        <div className="relative grid items-center gap-10 overflow-hidden rounded-3xl bg-primary p-10 text-primary-foreground md:grid-cols-[1.4fr_1fr] md:p-16">
+        <div className="relative grid place-items-center gap-10 overflow-hidden rounded-3xl bg-primary p-10 text-center text-primary-foreground md:p-16">
           <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
           <div className="absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-primary-foreground/10 blur-3xl" />
-          <div className="relative">
+          <div className="relative max-w-3xl">
             <h2 className="font-display text-4xl md:text-5xl">Have a tech pack? Let's price it.</h2>
-            <p className="mt-4 max-w-lg text-primary-foreground/80">Send your tech pack, target FOB and quantity. We'll come back within 48 hours with the right factory and a clear quote.</p>
+            <p className="mx-auto mt-4 max-w-lg text-primary-foreground/80">Send your tech pack, target FOB and quantity. We'll come back within 48 hours with the right factory and a clear quote.</p>
           </div>
-          <div className="relative flex flex-wrap gap-3 md:justify-end">
-            <Link to="/contact" className="inline-flex items-center gap-2 rounded-full bg-primary-foreground px-6 py-3 text-sm font-medium text-primary transition hover:-translate-y-0.5 hover:shadow-lg">Request a Quote <ArrowUpRight className="h-4 w-4" /></Link>
-            <a href="mailto:hello@martxbd.com" className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary-foreground/10">Email us <ArrowUpRight className="h-4 w-4" /></a>
+          <div className="relative flex flex-wrap justify-center gap-3">
+            <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary-foreground px-6 py-3 text-sm font-medium text-primary transition hover:-translate-y-0.5 hover:shadow-lg sm:w-auto">Request a Quote <ArrowUpRight className="h-4 w-4" /></Link>
+            <a href="mailto:hello@martxbd.com" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary-foreground/10 sm:w-auto">Email us <ArrowUpRight className="h-4 w-4" /></a>
           </div>
         </div>
       </section>

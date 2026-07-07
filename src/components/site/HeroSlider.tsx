@@ -25,7 +25,6 @@ const scenes: Scene[] = [
   { word: "CRAFT",   eyebrow: "Spring / Summer 27",  desc: "Defy the ordinary. Garments engineered with the kind of patience and detail your customer can feel.", models: [male1, kid, male2] },
   { word: "THREADS", eyebrow: "Built in Bangladesh", desc: "Sourced, cut and stitched in audited Dhaka factories — the same hands behind the brands you already wear.", models: [s2a, s2k, s2b] },
   { word: "FAMILY",  eyebrow: "Men · Women · Kids",  desc: "From everyday menswear to soft, safe kidswear — one team, one quality bar, across every category.", models: [s3a, s3k, s3b] },
-  { word: "TRUST",   eyebrow: "Eighteen years in",   desc: "120+ global brands. 40M pieces a year. A buying house that ships on time, every season.", models: [s4a, s4k, s4b] },
 ];
 
 const HOLD = 4200;
@@ -68,17 +67,16 @@ export function HeroSlider() {
       <div aria-hidden className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
 
-      <div className="container-x flex items-center justify-between pt-6 text-[10px] uppercase tracking-[0.3em] text-primary/60">
+      <div className="container-x flex items-center justify-between pt-6 text-[10px] uppercase tracking-[0.3em] text-primary/60 sm:pt-6">
         <span>{s.eyebrow}</span>
       </div>
 
       <div className="relative">
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-x-0 top-5 z-0 flex justify-center sm:inset-0 sm:top-0 sm:items-center sm:pb-0">
           <h1
             key={`w-${i}`}
-            className="select-none whitespace-nowrap font-display font-bold leading-none text-primary"
+            className="select-none whitespace-nowrap font-display font-bold leading-none text-primary text-[clamp(4.7rem,24vw,22rem)] sm:text-[clamp(6rem,22vw,22rem)]"
             style={{
-              fontSize: "clamp(6rem, 22vw, 22rem)",
               letterSpacing: "-0.04em",
               animation: transitioning
                 ? "word-out 0.65s cubic-bezier(.7,0,.3,1) forwards"
@@ -100,10 +98,10 @@ export function HeroSlider() {
           </h1>
         </div>
 
-        <div className="container-x relative grid h-[78vh] min-h-[560px] max-h-[820px] grid-cols-3 items-end gap-2 sm:gap-6">
+        <div className="container-x relative grid h-[350px] grid-cols-3 items-end gap-2 pt-16 sm:h-[78vh] sm:min-h-[560px] sm:max-h-[820px] sm:gap-6 sm:pt-0">
           {s.models.map((src, idx) => {
             const delay = idx * 120;
-            const yOffset = idx === 0 ? 12 : idx === 1 ? 4 : 16;
+            const yOffset = 0;
             return (
               <figure
                 key={`${i}-${idx}`}
@@ -123,7 +121,7 @@ export function HeroSlider() {
                   alt=""
                   width={768}
                   height={1536}
-                  className="relative z-10 h-[88%] w-auto max-w-full object-contain drop-shadow-[0_30px_40px_oklch(0.22_0.04_220/0.25)] sm:h-[94%]"
+                  className="relative z-10 h-[72%] w-auto max-w-full object-contain drop-shadow-[0_30px_40px_oklch(0.22_0.04_220/0.25)] sm:h-[94%]"
                   style={{ transform: `translateY(${yOffset}px)` }}
                 />
               </figure>
@@ -131,7 +129,7 @@ export function HeroSlider() {
           })}
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-[16%] flex justify-center px-6">
+        <div className="pointer-events-none relative z-20 flex justify-center px-6 pb-8 sm:mt-0 sm:px-6 sm:pb-8">
           <p
             key={`d-${i}`}
             className="pointer-events-auto max-w-md text-center text-sm leading-relaxed text-primary/75 sm:text-base"
@@ -142,8 +140,8 @@ export function HeroSlider() {
         </div>
       </div>
 
-      <div className="container-x flex flex-wrap items-center justify-between gap-4 border-t border-primary/10 py-5">
-        <div className="flex items-center gap-2">
+      <div className="container-x grid items-center gap-4 border-t border-primary/10 py-5 sm:mt-4 md:grid-cols-[1fr_auto_1fr]">
+        <div className="flex items-center gap-2 justify-self-center md:justify-self-start">
           <button onClick={() => go(i - 1)} aria-label="Previous" className="grid h-10 w-10 place-items-center rounded-full border border-primary/20 text-primary transition hover:bg-primary hover:text-primary-foreground">
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -162,11 +160,10 @@ export function HeroSlider() {
           </div>
         </div>
 
-        <Link to="/products" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-[11px] font-medium uppercase tracking-[0.25em] text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg">
+        <Link to="/products" className="inline-flex max-w-full items-center justify-self-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[10px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg sm:px-6 sm:text-[11px] sm:tracking-[0.25em]">
           Explore the collection <ArrowUpRight className="h-4 w-4" />
         </Link>
-
-        <span className="font-display text-xs text-primary/50">© 2027 Noor Threads</span>
+        <span aria-hidden className="hidden md:block" />
       </div>
     </div>
   );
