@@ -23,7 +23,7 @@ type Scene = {
 
 const scenes: Scene[] = [
   { word: "CRAFT",   eyebrow: "Spring / Summer 27",  desc: "Defy the ordinary. Garments engineered with the kind of patience and detail your customer can feel.", models: [male1, kid, male2] },
-  { word: "THREADS", eyebrow: "Built in Bangladesh", desc: "Sourced, cut and stitched in audited Dhaka factories — the same hands behind the brands you already wear.", models: [s2a, s2k, s2b] },
+  { word: "SOURCE", eyebrow: "Built in Bangladesh", desc: "Sourced, cut and stitched in audited Dhaka factories — the same hands behind the brands you already wear.", models: [s2a, s2k, s2b] },
   { word: "FAMILY",  eyebrow: "Men · Women · Kids",  desc: "From everyday menswear to soft, safe kidswear — one team, one quality bar, across every category.", models: [s3a, s3k, s3b] },
 ];
 
