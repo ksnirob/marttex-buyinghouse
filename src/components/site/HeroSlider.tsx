@@ -22,9 +22,24 @@ type Scene = {
 };
 
 const scenes: Scene[] = [
-  { word: "CRAFT",   eyebrow: "Spring / Summer 27",  desc: "Defy the ordinary. Garments engineered with the kind of patience and detail your customer can feel.", models: [male1, kid, male2] },
-  { word: "SOURCE", eyebrow: "Built in Bangladesh", desc: "Sourced, cut and stitched in audited Dhaka factories — the same hands behind the brands you already wear.", models: [s2a, s2k, s2b] },
-  { word: "FAMILY",  eyebrow: "Men · Women · Kids",  desc: "From everyday menswear to soft, safe kidswear — one team, one quality bar, across every category.", models: [s3a, s3k, s3b] },
+  {
+    word: "CRAFT",
+    eyebrow: "Spring / Summer 27",
+    desc: "Defy the ordinary. Garments engineered with the kind of patience and detail your customer can feel.",
+    models: [male1, kid, male2],
+  },
+  {
+    word: "SOURCE",
+    eyebrow: "Built in Bangladesh",
+    desc: "Sourced, cut and stitched in audited Dhaka factories — the same hands behind the brands you already wear.",
+    models: [s2a, s2k, s2b],
+  },
+  {
+    word: "FAMILY",
+    eyebrow: "Men · Women · Kids",
+    desc: "From everyday menswear to soft, safe kidswear — one team, one quality bar, across every category.",
+    models: [s3a, s3k, s3b],
+  },
 ];
 
 const HOLD = 4200;
@@ -51,7 +66,7 @@ export function HeroSlider() {
   const s = scenes[i];
 
   return (
-    <div className="relative isolate overflow-hidden bg-[oklch(0.97_0.008_85)]">
+    <div className="relative isolate overflow-hidden bg-[oklch(0.975_0.006_205)]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[55%]"
@@ -64,8 +79,14 @@ export function HeroSlider() {
           transformOrigin: "bottom",
         }}
       />
-      <div aria-hidden className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[40rem] w-[60rem] -translate-x-1/2 rounded-full bg-accent/15 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 right-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl"
+      />
 
       <div className="container-x flex items-center justify-between pt-6 text-[10px] uppercase tracking-[0.3em] text-primary/60 sm:pt-6">
         <span>{s.eyebrow}</span>
@@ -133,7 +154,9 @@ export function HeroSlider() {
           <p
             key={`d-${i}`}
             className="pointer-events-auto max-w-md text-center text-sm leading-relaxed text-primary/75 sm:text-base"
-            style={{ animation: transitioning ? "fade-out-soft 0.4s forwards" : "fade-up 0.8s 0.3s both" }}
+            style={{
+              animation: transitioning ? "fade-out-soft 0.4s forwards" : "fade-up 0.8s 0.3s both",
+            }}
           >
             {s.desc}
           </p>
@@ -142,10 +165,18 @@ export function HeroSlider() {
 
       <div className="container-x grid items-center gap-4 border-t border-primary/10 py-5 sm:mt-4 md:grid-cols-[1fr_auto_1fr]">
         <div className="flex items-center gap-2 justify-self-center md:justify-self-start">
-          <button onClick={() => go(i - 1)} aria-label="Previous" className="grid h-10 w-10 place-items-center rounded-full border border-primary/20 text-primary transition hover:bg-primary hover:text-primary-foreground">
+          <button
+            onClick={() => go(i - 1)}
+            aria-label="Previous"
+            className="grid h-10 w-10 place-items-center rounded-full border border-primary/20 text-primary transition hover:bg-primary hover:text-primary-foreground"
+          >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <button onClick={() => go(i + 1)} aria-label="Next" className="grid h-10 w-10 place-items-center rounded-full border border-primary/20 text-primary transition hover:bg-primary hover:text-primary-foreground">
+          <button
+            onClick={() => go(i + 1)}
+            aria-label="Next"
+            className="grid h-10 w-10 place-items-center rounded-full border border-primary/20 text-primary transition hover:bg-primary hover:text-primary-foreground"
+          >
             <ChevronRight className="h-4 w-4" />
           </button>
           <div className="ml-3 flex items-center gap-2">
@@ -154,13 +185,19 @@ export function HeroSlider() {
                 key={idx}
                 onClick={() => idx !== i && go(idx)}
                 aria-label={`Scene ${idx + 1}`}
-                className={"h-1.5 rounded-full transition-all duration-500 " + (idx === i ? "w-10 bg-primary" : "w-4 bg-primary/25 hover:bg-primary/50")}
+                className={
+                  "h-1.5 rounded-full transition-all duration-500 " +
+                  (idx === i ? "w-10 bg-primary" : "w-4 bg-primary/25 hover:bg-primary/50")
+                }
               />
             ))}
           </div>
         </div>
 
-        <Link to="/products" className="inline-flex max-w-full items-center justify-self-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[10px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg sm:px-6 sm:text-[11px] sm:tracking-[0.25em]">
+        <Link
+          to="/products"
+          className="inline-flex max-w-full items-center justify-self-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[10px] font-medium uppercase tracking-[0.18em] text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg sm:px-6 sm:text-[11px] sm:tracking-[0.25em]"
+        >
           Explore the collection <ArrowUpRight className="h-4 w-4" />
         </Link>
         <span aria-hidden className="hidden md:block" />
