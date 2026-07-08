@@ -1,8 +1,11 @@
 import { useEffect, type ReactNode } from "react";
+import { useLocation } from "@tanstack/react-router";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
+  const location = useLocation();
+
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>(".section-reveal"));
 
@@ -23,12 +26,15 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       { threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
     );
 
-    window.requestAnimationFrame(() => {
+    const frame = window.requestAnimationFrame(() => {
       sections.forEach((section) => observer.observe(section));
     });
 
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [location.pathname]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">

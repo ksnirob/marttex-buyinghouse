@@ -113,7 +113,7 @@ function ProductCategory() {
         <PageHeader eyebrow="Products" title={cat.name} lead={cat.desc} />
       </div>
 
-      <div className="section-reveal container-x pt-6">
+      <div className="container-x pt-6">
         <Link
           to="/products"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary"
@@ -122,7 +122,7 @@ function ProductCategory() {
         </Link>
       </div>
 
-      <section className="section-reveal relative">
+      <section className="relative">
         <BgShapes variant="soft" />
         <div className="container-x py-16">
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

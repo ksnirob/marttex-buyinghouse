@@ -133,7 +133,7 @@ function Products() {
         </div>
       </section>
 
-      <section className="section-reveal relative">
+      <section className="relative">
         <BgShapes variant="soft" />
         <div className="container-x space-y-24 py-20">
           {visible.map((cat) => (
