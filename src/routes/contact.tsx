@@ -22,7 +22,7 @@ function Contact() {
         title="Let's talk threads."
         lead="Send your tech pack, target FOB and quantity. We'll come back within 48 hours."
       />
-      <section className="container-x grid gap-12 py-24 lg:grid-cols-[1.2fr_1fr]">
+      <section className="section-reveal container-x grid gap-12 py-24 lg:grid-cols-[1.2fr_1fr]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -73,8 +73,8 @@ function Contact() {
             <h3 className="font-display text-2xl text-primary">Dhaka office</h3>
             <ul className="mt-5 space-y-4 text-sm text-muted-foreground">
               <li className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 text-primary" /> House 24, Road 11, Banani, Dhaka
-                1213, Bangladesh
+                <MapPin className="mt-0.5 h-5 w-5 text-primary" /> Nikunja-02, Road-09, House-07,
+                Khilkhet, Dhaka-1229, Bangladesh
               </li>
               <li className="flex items-start gap-3">
                 <User className="mt-0.5 h-5 w-5 text-primary" /> Mukhlesur Rahman (Shakil)

@@ -43,18 +43,42 @@ import fabric03 from "@/assets/p-fabric-03.jpg";
 
 export const Route = createFileRoute("/products/")({
   component: Products,
-  head: () => ({ meta: [{ title: "Products — MartXBD" }, { name: "description", content: "Knit, woven, denim, outerwear, kidswear and fabric capabilities." }] }),
+  head: () => ({
+    meta: [
+      { title: "Products — MartXBD" },
+      {
+        name: "description",
+        content: "Knit, woven, denim, outerwear, kidswear and fabric capabilities.",
+      },
+    ],
+  }),
 });
 
 type Cat = { key: string; name: string; items: string[] };
 
 const cats: Cat[] = [
-  { key: "knit",    name: "Knit & Jersey",     items: [tshirt, knit, sweat, polo, knit01, knit02, knit03] },
-  { key: "woven",   name: "Woven Shirts",      items: [shirtBlue, woven, flannel, woven01, woven02, woven03] },
-  { key: "denim",   name: "Denim & Bottoms",   items: [jeans, denim, chino, denim01, denim02, denim03] },
-  { key: "outer",   name: "Outerwear",         items: [puffer, trench, outer01, outer02, outer03] },
-  { key: "kids",    name: "Kids & Babywear",   items: [kidsStripe, kids, baby, kids01, kids02, kids03] },
-  { key: "fabric",  name: "Fabric & Trims",    items: [fabric, sourcing, fabric01, fabric02, fabric03] },
+  {
+    key: "knit",
+    name: "Knit & Jersey",
+    items: [tshirt, knit, sweat, polo, knit01, knit02, knit03],
+  },
+  {
+    key: "woven",
+    name: "Woven Shirts",
+    items: [shirtBlue, woven, flannel, woven01, woven02, woven03],
+  },
+  {
+    key: "denim",
+    name: "Denim & Bottoms",
+    items: [jeans, denim, chino, denim01, denim02, denim03],
+  },
+  { key: "outer", name: "Outerwear", items: [puffer, trench, outer01, outer02, outer03] },
+  { key: "kids", name: "Kids & Babywear", items: [kidsStripe, kids, baby, kids01, kids02, kids03] },
+  {
+    key: "fabric",
+    name: "Fabric & Trims",
+    items: [fabric, sourcing, fabric01, fabric02, fabric03],
+  },
 ];
 
 function Products() {
@@ -91,24 +115,41 @@ function Products() {
 
       <section className="sticky top-20 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="container-x flex gap-2 overflow-x-auto py-4">
-          <FilterPill label="All" active={active === "all"} onClick={() => setActive("all")} count={cats.reduce((a, c) => a + c.items.length, 0)} />
+          <FilterPill
+            label="All"
+            active={active === "all"}
+            onClick={() => setActive("all")}
+            count={cats.reduce((a, c) => a + c.items.length, 0)}
+          />
           {cats.map((c) => (
-            <FilterPill key={c.key} label={c.name} active={active === c.key} onClick={() => setActive(c.key)} count={c.items.length} />
+            <FilterPill
+              key={c.key}
+              label={c.name}
+              active={active === c.key}
+              onClick={() => setActive(c.key)}
+              count={c.items.length}
+            />
           ))}
         </div>
       </section>
 
-      <section className="relative">
+      <section className="section-reveal relative">
         <BgShapes variant="soft" />
         <div className="container-x space-y-24 py-20">
           {visible.map((cat) => (
             <div key={cat.key} className="animate-fade-up">
               <div className="mb-8 flex items-end justify-between gap-6">
                 <div>
-                  <p className="eyebrow">{String(visible.indexOf(cat) + 1).padStart(2, "0")} — Category</p>
-                  <h2 className="mt-3 font-display text-4xl text-primary md:text-5xl">{cat.name}</h2>
+                  <p className="eyebrow">
+                    {String(visible.indexOf(cat) + 1).padStart(2, "0")} — Category
+                  </p>
+                  <h2 className="mt-3 font-display text-4xl text-primary md:text-5xl">
+                    {cat.name}
+                  </h2>
                 </div>
-                <p className="hidden text-sm text-muted-foreground sm:block">{cat.items.length} pieces</p>
+                <p className="hidden text-sm text-muted-foreground sm:block">
+                  {cat.items.length} pieces
+                </p>
               </div>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {cat.items.map((src, i) => {
@@ -120,7 +161,14 @@ function Products() {
                       className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
                     >
                       <div className="aspect-[4/5] overflow-hidden">
-                        <img src={src} alt={cat.name} loading="lazy" width={1000} height={1200} className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-110" />
+                        <img
+                          src={src}
+                          alt={cat.name}
+                          loading="lazy"
+                          width={1000}
+                          height={1200}
+                          className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-110"
+                        />
                       </div>
                       <span className="absolute inset-0 grid place-items-center bg-primary/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                         <span className="grid h-14 w-14 place-items-center rounded-full bg-background/95 text-primary shadow-lg">
@@ -141,7 +189,17 @@ function Products() {
   );
 }
 
-function FilterPill({ label, active, onClick, count }: { label: string; active: boolean; onClick: () => void; count: number }) {
+function FilterPill({
+  label,
+  active,
+  onClick,
+  count,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  count: number;
+}) {
   return (
     <button
       onClick={onClick}
@@ -153,7 +211,14 @@ function FilterPill({ label, active, onClick, count }: { label: string; active: 
       }
     >
       {label}
-      <span className={"rounded-full px-2 py-0.5 text-[10px] " + (active ? "bg-primary-foreground/20" : "bg-muted")}>{count}</span>
+      <span
+        className={
+          "rounded-full px-2 py-0.5 text-[10px] " +
+          (active ? "bg-primary-foreground/20" : "bg-muted")
+        }
+      >
+        {count}
+      </span>
     </button>
   );
 }

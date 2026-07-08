@@ -82,7 +82,9 @@ function NewsDetail() {
       <SiteLayout>
         <div className="container-x py-32 text-center">
           <h1 className="font-display text-4xl text-primary">Article not found</h1>
-          <Link to="/news" className="btn-primary mt-8 inline-flex">Back to News</Link>
+          <Link to="/news" className="btn-primary mt-8 inline-flex">
+            Back to News
+          </Link>
         </div>
       </SiteLayout>
     );
@@ -90,28 +92,44 @@ function NewsDetail() {
 
   return (
     <SiteLayout>
-      <div className="container-x pt-10">
-        <Link to="/news" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary">
+      <div className="section-reveal container-x pt-10">
+        <Link
+          to="/news"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary"
+        >
           <ArrowLeft className="h-4 w-4" /> Back to News
         </Link>
       </div>
 
-      <div className="container-x mt-6">
+      <div className="section-reveal container-x mt-6">
         <div className="overflow-hidden rounded-3xl">
-          <img src={article.img} alt={article.title} loading="eager" className="aspect-[16/8] w-full object-cover" />
+          <img
+            src={article.img}
+            alt={article.title}
+            loading="eager"
+            className="aspect-[16/8] w-full object-cover"
+          />
         </div>
       </div>
 
-      <article className="container-x max-w-4xl py-14">
+      <article className="section-reveal container-x max-w-4xl py-14">
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground">
           <span className="rounded-full bg-secondary px-3 py-1">{article.tag}</span>
-          <span className="inline-flex items-center gap-1.5"><Calendar className="h-3 w-3" /> {article.date}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Calendar className="h-3 w-3" /> {article.date}
+          </span>
         </div>
-        <h1 className="mt-6 font-display text-4xl leading-tight text-primary md:text-5xl">{article.title}</h1>
-        <p className="mt-6 border-l-4 border-primary/30 pl-5 text-lg leading-relaxed text-muted-foreground">{article.lead}</p>
+        <h1 className="mt-6 font-display text-4xl leading-tight text-primary md:text-5xl">
+          {article.title}
+        </h1>
+        <p className="mt-6 border-l-4 border-primary/30 pl-5 text-lg leading-relaxed text-muted-foreground">
+          {article.lead}
+        </p>
         <div className="mt-10 space-y-6">
           {article.body.map((para, i) => (
-            <p key={i} className="leading-relaxed text-foreground/80">{para}</p>
+            <p key={i} className="leading-relaxed text-foreground/80">
+              {para}
+            </p>
           ))}
         </div>
       </article>

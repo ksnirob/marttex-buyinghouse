@@ -3,18 +3,19 @@ import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const productCats = [
-  { key: "all",    label: "All Products" },
-  { key: "knit",   label: "Knit & Jersey" },
-  { key: "woven",  label: "Woven Shirts" },
-  { key: "denim",  label: "Denim & Bottoms" },
-  { key: "outer",  label: "Outerwear" },
-  { key: "kids",   label: "Kids & Babywear" },
+  { key: "all", label: "All Products" },
+  { key: "knit", label: "Knit & Jersey" },
+  { key: "woven", label: "Woven Shirts" },
+  { key: "denim", label: "Denim & Bottoms" },
+  { key: "outer", label: "Outerwear" },
+  { key: "kids", label: "Kids & Babywear" },
   { key: "fabric", label: "Fabric & Trims" },
 ] as const;
 
 const links = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
+  { to: "/profile", label: "Profile" },
   { to: "/services", label: "Services" },
   { to: "/gallery", label: "Gallery" },
   { to: "/news", label: "News" },
@@ -27,12 +28,27 @@ export function Nav() {
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container-x flex h-20 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground font-display text-lg">M</span>
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground font-display text-lg">
+            M
+          </span>
           <span className="font-display text-lg tracking-tight text-primary">MartXBD</span>
         </Link>
         <nav className="hidden items-center gap-8 lg:flex">
-          <Link to="/" className="text-sm text-foreground/80 transition hover:text-primary" activeProps={{ className: "text-primary font-medium" }} activeOptions={{ exact: true }}>Home</Link>
-          <Link to="/about" className="text-sm text-foreground/80 transition hover:text-primary" activeProps={{ className: "text-primary font-medium" }}>About</Link>
+          <Link
+            to="/"
+            className="text-sm text-foreground/80 transition hover:text-primary"
+            activeProps={{ className: "text-primary font-medium" }}
+            activeOptions={{ exact: true }}
+          >
+            Home
+          </Link>
+          <Link
+            to="/about"
+            className="text-sm text-foreground/80 transition hover:text-primary"
+            activeProps={{ className: "text-primary font-medium" }}
+          >
+            About
+          </Link>
 
           {/* Products dropdown */}
           <div className="group relative">
@@ -74,7 +90,12 @@ export function Nav() {
           </div>
 
           {links.slice(2).map((l) => (
-            <Link key={l.to} to={l.to} className="text-sm text-foreground/80 transition hover:text-primary" activeProps={{ className: "text-primary font-medium" }}>
+            <Link
+              key={l.to}
+              to={l.to}
+              className="text-sm text-foreground/80 transition hover:text-primary"
+              activeProps={{ className: "text-primary font-medium" }}
+            >
               {l.label}
             </Link>
           ))}
@@ -95,32 +116,70 @@ export function Nav() {
       {open && (
         <div className="border-t border-border bg-background lg:hidden">
           <div className="container-x flex flex-col gap-1 py-4">
-            <Link to="/" onClick={() => setOpen(false)} className="rounded-md px-2 py-3 text-sm hover:bg-muted">Home</Link>
-            <Link to="/about" onClick={() => setOpen(false)} className="rounded-md px-2 py-3 text-sm hover:bg-muted">About</Link>
-            <button onClick={() => setMobileProducts((v) => !v)} className="flex items-center justify-between rounded-md px-2 py-3 text-sm hover:bg-muted">
-              Products <ChevronDown className={"h-4 w-4 transition " + (mobileProducts ? "rotate-180" : "")} />
+            <Link
+              to="/"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-2 py-3 text-sm hover:bg-muted"
+            >
+              Home
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-2 py-3 text-sm hover:bg-muted"
+            >
+              About
+            </Link>
+            <button
+              onClick={() => setMobileProducts((v) => !v)}
+              className="flex items-center justify-between rounded-md px-2 py-3 text-sm hover:bg-muted"
+            >
+              Products{" "}
+              <ChevronDown
+                className={"h-4 w-4 transition " + (mobileProducts ? "rotate-180" : "")}
+              />
             </button>
             {mobileProducts && (
               <div className="ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
                 {productCats.map((c) =>
                   c.key === "all" ? (
-                    <Link key={c.key} to="/products" onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary">
+                    <Link
+                      key={c.key}
+                      to="/products"
+                      onClick={() => setOpen(false)}
+                      className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary"
+                    >
                       {c.label}
                     </Link>
                   ) : (
-                    <Link key={c.key} to="/products/$category" params={{ category: c.key }} onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary">
+                    <Link
+                      key={c.key}
+                      to="/products/$category"
+                      params={{ category: c.key }}
+                      onClick={() => setOpen(false)}
+                      className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary"
+                    >
                       {c.label}
                     </Link>
-                  )
+                  ),
                 )}
               </div>
             )}
             {links.slice(2).map((l) => (
-              <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="rounded-md px-2 py-3 text-sm hover:bg-muted">
+              <Link
+                key={l.to}
+                to={l.to}
+                onClick={() => setOpen(false)}
+                className="rounded-md px-2 py-3 text-sm hover:bg-muted"
+              >
                 {l.label}
               </Link>
             ))}
-            <Link to="/contact" onClick={() => setOpen(false)} className="btn-primary mt-2 justify-center">
+            <Link
+              to="/contact"
+              onClick={() => setOpen(false)}
+              className="btn-primary mt-2 justify-center"
+            >
               Let's Talk
             </Link>
           </div>

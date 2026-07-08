@@ -19,11 +19,21 @@ const imgs = [hero, factory, quality, sourcing, knit, denim, woven, kids];
 function Gallery() {
   return (
     <SiteLayout>
-      <PageHeader eyebrow="Gallery" title="Behind the seams." lead="A glimpse into our showrooms, sampling studio and partner factory floors." />
-      <section className="container-x py-24">
+      <PageHeader
+        eyebrow="Gallery"
+        title="Behind the seams."
+        lead="A glimpse into our showrooms, sampling studio and partner factory floors."
+      />
+      <section className="section-reveal container-x py-24">
         <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 [&>*]:mb-6 [&>*]:break-inside-avoid">
           {imgs.concat(imgs).map((src, i) => (
-            <img key={i} src={src} alt="" loading="lazy" className="w-full rounded-2xl object-cover" />
+            <img
+              key={i}
+              src={src}
+              alt=""
+              loading="lazy"
+              className="w-full rounded-2xl object-cover"
+            />
           ))}
         </div>
       </section>

@@ -26,6 +26,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/profile" className="hover:text-primary-foreground">
+                Profile
+              </Link>
+            </li>
+            <li>
               <Link to="/products" className="hover:text-primary-foreground">
                 Products
               </Link>
@@ -51,7 +56,8 @@ export function Footer() {
           <h4 className="text-sm font-medium">Contact</h4>
           <ul className="mt-4 space-y-3 text-sm text-primary-foreground/70">
             <li className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4" /> House 24, Road 11, Banani, Dhaka 1213
+              <MapPin className="mt-0.5 h-4 w-4" /> Nikunja-02, Road-09, House-07, Khilkhet,
+              Dhaka-1229
             </li>
             <li className="flex items-start gap-2">
               <User className="mt-0.5 h-4 w-4" /> Mukhlesur Rahman (Shakil)

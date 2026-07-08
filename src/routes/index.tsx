@@ -104,31 +104,6 @@ function Index() {
     return () => window.clearInterval(id);
   }, [testimonialApi]);
 
-  useEffect(() => {
-    const sections = Array.from(document.querySelectorAll<HTMLElement>(".section-reveal"));
-
-    if (!("IntersectionObserver" in window)) {
-      sections.forEach((section) => section.classList.add("is-visible"));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
-    );
-
-    sections.forEach((section) => observer.observe(section));
-
-    return () => observer.disconnect();
-  }, []);
-
   const countryRows = [
     { code: "us", name: "United States" },
     { code: "gb", name: "United Kingdom" },
@@ -225,6 +200,42 @@ function Index() {
             >
               Read our story <ArrowUpRight className="h-4 w-4" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* COMPANY PROFILE */}
+      <section className="section-reveal bg-[oklch(0.24_0.07_205)] py-20 text-white md:py-24">
+        <div className="container-x grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+          <div>
+            <p className="eyebrow text-white/70">Factory profile</p>
+            <h2 className="mt-3 font-display text-4xl text-white md:text-5xl">
+              Established manufacturing capacity with partner factory reach.
+            </h2>
+            <p className="mt-5 text-white/70">
+              Mart Tex was established in 2010 with own knitwear production, a 14,000 sq ft facility
+              and partner factory support for woven, denim and larger apparel programs.
+            </p>
+            <Link
+              to="/profile"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-primary transition hover:-translate-y-0.5 hover:shadow-lg"
+            >
+              View company profile <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              { icon: Factory, value: "14,000", label: "Sq ft production space" },
+              { icon: Layers, value: "2M+", label: "Own factory pieces / year" },
+              { icon: Shield, value: "149", label: "Listed machines" },
+              { icon: Globe2, value: "20M+", label: "Partner factory supply capacity" },
+            ].map(({ icon: Icon, value, label }) => (
+              <div key={label} className="rounded-2xl border border-white/15 bg-white/8 p-6">
+                <Icon className="h-6 w-6 text-accent" />
+                <p className="mt-5 font-display text-4xl text-white">{value}</p>
+                <p className="mt-2 text-sm text-white/65">{label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

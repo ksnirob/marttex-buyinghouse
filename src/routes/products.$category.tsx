@@ -42,12 +42,42 @@ import fabric02 from "@/assets/p-fabric-02.jpg";
 import fabric03 from "@/assets/p-fabric-03.jpg";
 
 const cats = [
-  { key: "knit",   name: "Knit & Jersey",   desc: "T-shirts, polos, sweats, loungewear and performance knitwear.",   items: [tshirt, knit, sweat, polo, knit01, knit02, knit03] },
-  { key: "woven",  name: "Woven Shirts",    desc: "Casual, formal, oxford, flannel and technical wovens.",            items: [shirtBlue, woven, flannel, woven01, woven02, woven03] },
-  { key: "denim",  name: "Denim & Bottoms", desc: "Jeans, chinos, shorts, skirts and denim jackets.",                items: [jeans, denim, chino, denim01, denim02, denim03] },
-  { key: "outer",  name: "Outerwear",       desc: "Puffers, trenches, bombers and technical shell jackets.",          items: [puffer, trench, outer01, outer02, outer03] },
-  { key: "kids",   name: "Kids & Babywear", desc: "Soft, safe, certified fabrics for infants and children.",          items: [kidsStripe, kids, baby, kids01, kids02, kids03] },
-  { key: "fabric", name: "Fabric & Trims",  desc: "Cotton, blends, recycled fibres and accessory sourcing.",          items: [fabric, sourcing, fabric01, fabric02, fabric03] },
+  {
+    key: "knit",
+    name: "Knit & Jersey",
+    desc: "T-shirts, polos, sweats, loungewear and performance knitwear.",
+    items: [tshirt, knit, sweat, polo, knit01, knit02, knit03],
+  },
+  {
+    key: "woven",
+    name: "Woven Shirts",
+    desc: "Casual, formal, oxford, flannel and technical wovens.",
+    items: [shirtBlue, woven, flannel, woven01, woven02, woven03],
+  },
+  {
+    key: "denim",
+    name: "Denim & Bottoms",
+    desc: "Jeans, chinos, shorts, skirts and denim jackets.",
+    items: [jeans, denim, chino, denim01, denim02, denim03],
+  },
+  {
+    key: "outer",
+    name: "Outerwear",
+    desc: "Puffers, trenches, bombers and technical shell jackets.",
+    items: [puffer, trench, outer01, outer02, outer03],
+  },
+  {
+    key: "kids",
+    name: "Kids & Babywear",
+    desc: "Soft, safe, certified fabrics for infants and children.",
+    items: [kidsStripe, kids, baby, kids01, kids02, kids03],
+  },
+  {
+    key: "fabric",
+    name: "Fabric & Trims",
+    desc: "Cotton, blends, recycled fibres and accessory sourcing.",
+    items: [fabric, sourcing, fabric01, fabric02, fabric03],
+  },
 ];
 
 export const Route = createFileRoute("/products/$category")({
@@ -68,7 +98,9 @@ function ProductCategory() {
       <SiteLayout>
         <div className="container-x py-32 text-center">
           <h1 className="font-display text-4xl text-primary">Category not found</h1>
-          <Link to="/products" className="btn-primary mt-8 inline-flex">All Products</Link>
+          <Link to="/products" className="btn-primary mt-8 inline-flex">
+            All Products
+          </Link>
         </div>
       </SiteLayout>
     );
@@ -78,20 +110,19 @@ function ProductCategory() {
     <SiteLayout>
       <div className="relative">
         <BgShapes variant="default" />
-        <PageHeader
-          eyebrow="Products"
-          title={cat.name}
-          lead={cat.desc}
-        />
+        <PageHeader eyebrow="Products" title={cat.name} lead={cat.desc} />
       </div>
 
-      <div className="container-x pt-6">
-        <Link to="/products" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary">
+      <div className="section-reveal container-x pt-6">
+        <Link
+          to="/products"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary"
+        >
           <ArrowLeft className="h-4 w-4" /> All Products
         </Link>
       </div>
 
-      <section className="relative">
+      <section className="section-reveal relative">
         <BgShapes variant="soft" />
         <div className="container-x py-16">
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

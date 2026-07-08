@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -24,6 +25,11 @@ import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
+  '/profile': typeof ProfileRoute
   '/services': typeof ServicesRoute
   '/news/$slug': typeof NewsSlugRoute
   '/products/$category': typeof ProductsCategoryRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/profile': typeof ProfileRoute
   '/services': typeof ServicesRoute
   '/news/$slug': typeof NewsSlugRoute
   '/products/$category': typeof ProductsCategoryRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
+  '/profile': typeof ProfileRoute
   '/services': typeof ServicesRoute
   '/news/$slug': typeof NewsSlugRoute
   '/products/$category': typeof ProductsCategoryRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/news'
     | '/products'
+    | '/profile'
     | '/services'
     | '/news/$slug'
     | '/products/$category'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/gallery'
+    | '/profile'
     | '/services'
     | '/news/$slug'
     | '/products/$category'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/news'
     | '/products'
+    | '/profile'
     | '/services'
     | '/news/$slug'
     | '/products/$category'
@@ -162,6 +174,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   NewsRoute: typeof NewsRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
+  ProfileRoute: typeof ProfileRoute
   ServicesRoute: typeof ServicesRoute
 }
 
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -280,6 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   NewsRoute: NewsRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
+  ProfileRoute: ProfileRoute,
   ServicesRoute: ServicesRoute,
 }
 export const routeTree = rootRouteImport
