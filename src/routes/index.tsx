@@ -686,7 +686,7 @@ function Index() {
                 Request a Quote <ArrowUpRight className="h-4 w-4" />
               </Link>
               <a
-                href="mailto:hello@martxbd.com"
+                href="mailto:info@marttex.net"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary-foreground/10 sm:w-auto"
               >
                 Email us <ArrowUpRight className="h-4 w-4" />

@@ -10,7 +10,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <Footer />
       {/* WhatsApp floating button */}
       <a
-        href="https://wa.me/8801700000000"
+        href="https://wa.me/8801905450850"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"
