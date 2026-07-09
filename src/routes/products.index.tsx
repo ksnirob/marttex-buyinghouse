@@ -1,106 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { ZoomIn } from "lucide-react";
 import { PageHeader, SiteLayout } from "@/components/site/Layout";
 import { BgShapes } from "@/components/site/BgShapes";
 import { Lightbox, useLightbox } from "@/components/site/Lightbox";
-import { useEffect, useMemo, useState } from "react";
-import { ZoomIn } from "lucide-react";
-
-import knit from "@/assets/product-knit.jpg";
-import denim from "@/assets/product-denim.jpg";
-import woven from "@/assets/product-woven.jpg";
-import kids from "@/assets/product-kids.jpg";
-import sourcing from "@/assets/sourcing.jpg";
-import tshirt from "@/assets/p-tshirt-white.jpg";
-import sweat from "@/assets/p-sweat-grey.jpg";
-import polo from "@/assets/p-polo-olive.jpg";
-import shirtBlue from "@/assets/p-shirt-blue.jpg";
-import flannel from "@/assets/p-shirt-flannel.jpg";
-import jeans from "@/assets/p-jeans-indigo.jpg";
-import chino from "@/assets/p-chino-beige.jpg";
-import puffer from "@/assets/p-puffer-black.jpg";
-import trench from "@/assets/p-trench-camel.jpg";
-import baby from "@/assets/p-baby-mint.jpg";
-import kidsStripe from "@/assets/p-kids-stripe.jpg";
-import fabric from "@/assets/p-fabric-cotton.jpg";
-import knit01 from "@/assets/p-knit-01.jpg";
-import knit02 from "@/assets/p-knit-02.jpg";
-import knit03 from "@/assets/p-knit-03.jpg";
-import woven01 from "@/assets/p-woven-01.jpg";
-import woven02 from "@/assets/p-woven-02.jpg";
-import woven03 from "@/assets/p-woven-03.jpg";
-import denim01 from "@/assets/p-denim-01.jpg";
-import denim02 from "@/assets/p-denim-02.jpg";
-import denim03 from "@/assets/p-denim-03.jpg";
-import outer01 from "@/assets/p-outer-01.jpg";
-import outer02 from "@/assets/p-outer-02.jpg";
-import outer03 from "@/assets/p-outer-03.jpg";
-import kids01 from "@/assets/p-kids-01.jpg";
-import kids02 from "@/assets/p-kids-02.jpg";
-import kids03 from "@/assets/p-kids-03.jpg";
-import fabric01 from "@/assets/p-fabric-01.jpg";
-import fabric02 from "@/assets/p-fabric-02.jpg";
-import fabric03 from "@/assets/p-fabric-03.jpg";
+import { assetUrl, getPublicSiteData, type ApiCategory } from "@/lib/site-api";
 
 export const Route = createFileRoute("/products/")({
   component: Products,
-  head: () => ({
-    meta: [
-      { title: "Products — MartXBD" },
-      {
-        name: "description",
-        content: "Knit, woven, denim, outerwear, kidswear and fabric capabilities.",
-      },
-    ],
-  }),
+  head: () => ({ meta: [{ title: "Products — Mart Tex" }] }),
 });
 
-type Cat = { key: string; name: string; items: string[] };
-
-const cats: Cat[] = [
-  {
-    key: "knit",
-    name: "Knit & Jersey",
-    items: [tshirt, knit, sweat, polo, knit01, knit02, knit03],
-  },
-  {
-    key: "woven",
-    name: "Woven Shirts",
-    items: [shirtBlue, woven, flannel, woven01, woven02, woven03],
-  },
-  {
-    key: "denim",
-    name: "Denim & Bottoms",
-    items: [jeans, denim, chino, denim01, denim02, denim03],
-  },
-  { key: "outer", name: "Outerwear", items: [puffer, trench, outer01, outer02, outer03] },
-  { key: "kids", name: "Kids & Babywear", items: [kidsStripe, kids, baby, kids01, kids02, kids03] },
-  {
-    key: "fabric",
-    name: "Fabric & Trims",
-    items: [fabric, sourcing, fabric01, fabric02, fabric03],
-  },
-];
-
 function Products() {
-  const [active, setActive] = useState<string>("all");
+  const [active, setActive] = useState("all");
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const [loading, setLoading] = useState(true);
   const lb = useLightbox();
 
   useEffect(() => {
-    const sync = () => {
-      const h = window.location.hash.replace("#", "");
-      if (h && (h === "all" || cats.some((c) => c.key === h))) setActive(h);
-    };
-    sync();
-    window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
+    getPublicSiteData()
+      .then((site) => {
+        setCategories(site.categories);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  const visible = useMemo(() => {
-    if (active === "all") return cats;
-    return cats.filter((c) => c.key === active);
-  }, [active]);
-
-  const flat = useMemo(() => visible.flatMap((c) => c.items), [visible]);
+  const visibleCategories = active === "all" ? categories : categories.filter((item) => item.slug === active);
+  const images = visibleCategories
+    .flatMap((category) => category.galleryImages || [])
+    .map((image) => assetUrl(image.url));
 
   return (
     <SiteLayout>
@@ -108,117 +36,55 @@ function Products() {
         <BgShapes variant="default" />
         <PageHeader
           eyebrow="Products"
-          title="Categories we source, sample and ship."
-          lead="Tap any image to view it up close. Use the arrow keys to move between pieces."
+          title="From concept to collection."
+          lead="Explore the garments, fabrics and finishes we source, develop and deliver for fashion brands worldwide."
         />
       </div>
-
       <section className="sticky top-20 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="container-x flex gap-2 overflow-x-auto py-4">
-          <FilterPill
-            label="All"
-            active={active === "all"}
-            onClick={() => setActive("all")}
-            count={cats.reduce((a, c) => a + c.items.length, 0)}
-          />
-          {cats.map((c) => (
-            <FilterPill
-              key={c.key}
-              label={c.name}
-              active={active === c.key}
-              onClick={() => setActive(c.key)}
-              count={c.items.length}
-            />
+          <FilterPill label="All" active={active === "all"} onClick={() => setActive("all")} count={categories.reduce((total, category) => total + (category.galleryImages?.length || 0), 0)} />
+          {categories.map((category) => (
+            <FilterPill key={category._id} label={category.name} active={active === category.slug} onClick={() => setActive(category.slug)} count={category.galleryImages?.length || 0} />
           ))}
         </div>
       </section>
-
       <section className="relative">
         <BgShapes variant="soft" />
-        <div className="container-x space-y-24 py-20">
-          {visible.map((cat) => (
-            <div key={cat.key} className="animate-fade-up">
-              <div className="mb-8 flex items-end justify-between gap-6">
-                <div>
-                  <p className="eyebrow">
-                    {String(visible.indexOf(cat) + 1).padStart(2, "0")} — Category
-                  </p>
-                  <h2 className="mt-3 font-display text-4xl text-primary md:text-5xl">
-                    {cat.name}
-                  </h2>
+        <div className="container-x space-y-20 py-20">
+          {loading && <p className="text-muted-foreground">Loading products...</p>}
+          {!loading && visibleCategories.every((category) => !category.galleryImages?.length) && <p className="rounded-2xl border border-border bg-card p-8 text-muted-foreground">No gallery images have been added to this category yet.</p>}
+          {visibleCategories.map((category) => {
+            const gallery = category.galleryImages || [];
+            if (!gallery.length) return null;
+            return (
+              <div key={category._id}>
+                <p className="eyebrow">Category</p>
+                <h2 className="mt-3 font-display text-4xl text-primary md:text-5xl">{category.name}</h2>
+                {category.description && <p className="mt-3 max-w-2xl text-muted-foreground">{category.description}</p>}
+                <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {gallery.map((image) => {
+                      const src = assetUrl(image.url);
+                      const index = images.indexOf(src);
+                      return (
+                        <button key={`${category._id}-${src}`} onClick={() => lb.open(index)} className="group overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                          <div className="relative aspect-[4/5] overflow-hidden">
+                            <img src={src} alt={image.alt || category.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                            <span className="absolute inset-0 grid place-items-center bg-primary/35 opacity-0 transition group-hover:opacity-100"><ZoomIn className="h-7 w-7 text-white" /></span>
+                          </div>
+                        </button>
+                      );
+                    })}
                 </div>
-                <p className="hidden text-sm text-muted-foreground sm:block">
-                  {cat.items.length} pieces
-                </p>
               </div>
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {cat.items.map((src, i) => {
-                  const flatIndex = flat.indexOf(src);
-                  return (
-                    <button
-                      key={`${cat.key}-${i}`}
-                      onClick={() => lb.open(flatIndex)}
-                      className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
-                    >
-                      <div className="aspect-[4/5] overflow-hidden">
-                        <img
-                          src={src}
-                          alt={cat.name}
-                          loading="lazy"
-                          width={1000}
-                          height={1200}
-                          className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-110"
-                        />
-                      </div>
-                      <span className="absolute inset-0 grid place-items-center bg-primary/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <span className="grid h-14 w-14 place-items-center rounded-full bg-background/95 text-primary shadow-lg">
-                          <ZoomIn className="h-6 w-6" />
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
-
-      <Lightbox images={flat} index={lb.index} onClose={lb.close} onIndex={lb.to} />
+      <Lightbox images={images} index={lb.index} onClose={lb.close} onIndex={lb.to} />
     </SiteLayout>
   );
 }
 
-function FilterPill({
-  label,
-  active,
-  onClick,
-  count,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  count: number;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={
-        "flex shrink-0 items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-300 " +
-        (active
-          ? "border-primary bg-primary text-primary-foreground shadow-md"
-          : "border-border bg-card text-foreground/70 hover:border-primary/40 hover:text-primary")
-      }
-    >
-      {label}
-      <span
-        className={
-          "rounded-full px-2 py-0.5 text-[10px] " +
-          (active ? "bg-primary-foreground/20" : "bg-muted")
-        }
-      >
-        {count}
-      </span>
-    </button>
-  );
+function FilterPill({ label, active, onClick, count }: { label: string; active: boolean; onClick: () => void; count: number }) {
+  return <button onClick={onClick} className={`flex shrink-0 items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium ${active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground/70"}`}>{label}<span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-foreground">{count}</span></button>;
 }

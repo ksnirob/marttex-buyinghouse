@@ -45,7 +45,7 @@ import tb13 from "@/assets/brands/tb-13.svg";
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
-    meta: [{ title: "MartXBD — Built on Threads, Driven by Trust" }],
+    meta: [{ title: "Mart Tex — Built on Threads, Driven by Trust" }],
   }),
 });
 
@@ -495,7 +495,7 @@ function Index() {
                   role: "Head of Sourcing, Aurelia Studio",
                   initials: "EM",
                   quote:
-                    "MartXBD runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons.",
+                    "Mart Tex runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons.",
                 },
                 {
                   name: "Tomás Bernal",
@@ -516,7 +516,7 @@ function Index() {
                   role: "Buyer, Northwind Apparel",
                   initials: "JW",
                   quote:
-                    "Honest costing, no surprises at shipment. That's the part most buying houses fail at, and the part MartXBD gets exactly right.",
+                    "Honest costing, no surprises at shipment. That's the part most buying houses fail at, and the part Mart Tex gets exactly right.",
                 },
                 {
                   name: "Amara Okafor",

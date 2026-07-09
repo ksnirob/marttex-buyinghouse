@@ -5,7 +5,7 @@ import { articles } from "./news.$slug";
 
 export const Route = createFileRoute("/news/")({
   component: News,
-  head: () => ({ meta: [{ title: "News — MartXBD" }] }),
+  head: () => ({ meta: [{ title: "News — Mart Tex" }] }),
 });
 
 function News() {

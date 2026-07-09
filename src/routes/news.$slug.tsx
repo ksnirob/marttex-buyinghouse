@@ -16,7 +16,7 @@ export const articles = [
     body: [
       "The Bangladesh Garment Manufacturers and Exporters Association (BGMEA) confirmed the milestone in its Q1 2026 report, attributing the growth to stronger demand from the EU, UK and USA, alongside a significant uptick in value-added product categories such as outerwear, knitwear and technical fabrics.",
       "For buying houses and brand sourcing teams, the milestone carries practical implications. A larger export base means more factories competing for orders — which typically improves lead times and pricing. However, it also means capacity is tighter at the top end, where compliance-certified and sustainability-audited factories are increasingly in demand.",
-      "MartXBD's sourcing team has noted a 22% increase in new factory inquiries over the past two quarters, with brands specifically asking for WRAP, BSCI and GOTS-certified production partners. Our vetted network currently spans 60+ factories across Dhaka, Gazipur and Chittagong.",
+      "Mart Tex's sourcing team has noted a 22% increase in new factory inquiries over the past two quarters, with brands specifically asking for WRAP, BSCI and GOTS-certified production partners. Our vetted network currently spans 60+ factories across Dhaka, Gazipur and Chittagong.",
       "The key takeaway for buyers entering or scaling Bangladesh sourcing: the ecosystem is more sophisticated than ever, but so is the competition for the best factory slots. Establishing long-term relationships with a trusted local partner remains the most reliable way to lock in capacity and quality.",
     ],
   },
@@ -31,7 +31,7 @@ export const articles = [
       "Recycled polyester (rPET) derived from post-consumer bottles has become the most commercially accessible sustainable fibre in Bangladesh's supply chain. Mill-gate pricing is now within 8–12% of virgin poly, down from a 25%+ premium three years ago. For performance-oriented knitwear — activewear, outerwear linings, interlock fleece — rPET is often the right call.",
       "Organic cotton tells a different story. The premium over conventional cotton sits at 18–30% depending on certification (GOTS vs. OCS) and yarn count. The quality uplift is real — better handle, cleaner dye uptake, less fibre breakage — but for basic T-shirt programmes where brand marketing doesn't lean into sustainability, the math rarely closes.",
       "The winning formula we're seeing for SS27: hybrid specs. A 70/30 conventional cotton / rPET blend for core basics hits a sweet spot of cost, performance and a credible sustainability story. For hero pieces, full organic or full rPET with a verified chain of custody.",
-      "MartXBD can arrange fabric lab dips and salesman samples in 12–15 days from most partner mills. Reach out with your fibre brief and target FOB and we'll map the right options.",
+      "Mart Tex can arrange fabric lab dips and salesman samples in 12–15 days from most partner mills. Reach out with your fibre brief and target FOB and we'll map the right options.",
     ],
   },
   {
@@ -69,7 +69,7 @@ export const Route = createFileRoute("/news/$slug")({
   component: NewsDetail,
   head: ({ params }) => {
     const article = articles.find((a) => a.slug === params.slug);
-    return { meta: [{ title: article ? `${article.title} — MartXBD` : "Article — MartXBD" }] };
+    return { meta: [{ title: article ? `${article.title} — Mart Tex` : "Article — Mart Tex" }] };
   },
 });
 

@@ -1,10 +1,22 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useLocation } from "@tanstack/react-router";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
+import { API_URL, assetUrl, getPublicSiteData, type ApiCategory, type SiteSettings } from "@/lib/site-api";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
+  const [settings, setSettings] = useState<SiteSettings>({});
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
+
+  useEffect(() => {
+    void getPublicSiteData()
+      .then((data) => {
+        setSettings(data.settings);
+        setCategories(data.categories);
+      })
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>(".section-reveal"));
@@ -38,12 +50,12 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Nav />
+      <Nav settings={settings} categories={categories} />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <Footer settings={settings} />
       {/* WhatsApp floating button */}
       <a
-        href="https://wa.me/8801905450850"
+        href={`https://wa.me/${(settings.whatsapp || settings.phones?.[0] || "8801905450850").replace(/\D/g, "")}`}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"
@@ -66,14 +78,80 @@ export function PageHeader({
   title: string;
   lead?: string;
 }) {
+  const location = useLocation();
+  const [pageContent, setPageContent] = useState<{
+    title?: string;
+    body?: string;
+    seoTitle?: string;
+    seoDescription?: string;
+    thumbnail?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const path = location.pathname.replace(/^\/|\/$/g, "");
+    const supportedPages = new Set([
+      "about",
+      "profile",
+      "products",
+      "services",
+      "gallery",
+      "news",
+      "contact",
+    ]);
+
+    if (!supportedPages.has(path)) {
+      setPageContent(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    fetch(`${API_URL}/api/content/page-${path}-header`, { signal: controller.signal })
+      .then((response) => response.json())
+      .then((result) => setPageContent(result.data || null))
+      .catch(() => setPageContent(null));
+
+    return () => controller.abort();
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!pageContent) return;
+    const seoTitle = pageContent.seoTitle || pageContent.title;
+    const seoDescription = pageContent.seoDescription || pageContent.body;
+    const thumbnail = assetUrl(pageContent.thumbnail);
+
+    if (seoTitle) document.title = seoTitle;
+
+    const setMeta = (selector: string, attribute: "name" | "property", key: string, content?: string) => {
+      if (!content) return;
+      let element = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!element) {
+        element = document.createElement("meta");
+        element.setAttribute(attribute, key);
+        document.head.appendChild(element);
+      }
+      element.content = content;
+    };
+
+    setMeta('meta[name="description"]', "name", "description", seoDescription);
+    setMeta('meta[property="og:title"]', "property", "og:title", seoTitle);
+    setMeta('meta[property="og:description"]', "property", "og:description", seoDescription);
+    setMeta('meta[name="twitter:title"]', "name", "twitter:title", seoTitle);
+    setMeta('meta[name="twitter:description"]', "name", "twitter:description", seoDescription);
+    setMeta('meta[property="og:image"]', "property", "og:image", thumbnail);
+    setMeta('meta[name="twitter:image"]', "name", "twitter:image", thumbnail);
+  }, [pageContent]);
+
+  const displayedTitle = pageContent?.title || title;
+  const displayedLead = pageContent?.body || lead;
+
   return (
     <section className="section-reveal border-b border-border/60 bg-secondary/40">
       <div className="container-x py-20 md:py-28">
         <p className="eyebrow">{eyebrow}</p>
         <h1 className="mt-4 max-w-3xl font-display text-5xl leading-[1.05] text-primary md:text-6xl">
-          {title}
+          {displayedTitle}
         </h1>
-        {lead && <p className="mt-6 max-w-2xl text-lg text-muted-foreground">{lead}</p>}
+        {displayedLead && <p className="mt-6 max-w-2xl text-lg text-muted-foreground">{displayedLead}</p>}
       </div>
     </section>
   );

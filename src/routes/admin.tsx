@@ -1,0 +1,1209 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Boxes, ChevronDown, CircleCheck, Contact, FilePlus2, ImagePlus, LogOut, Menu, Plus, RefreshCw, Save, Settings, Tags, Trash2, Type, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+
+export const Route = createFileRoute("/admin")({
+  component: AdminDashboard,
+  head: () => ({
+    meta: [{ title: "Admin Dashboard - Mart Tex" }],
+  }),
+});
+
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:4000";
+const tokenKey = "martxbd_admin_token";
+
+function adminAssetUrl(value?: string) {
+  if (!value) return "";
+  return /^https?:\/\//i.test(value) ? value : `${API_URL}${value.startsWith("/") ? "" : "/"}${value}`;
+}
+
+type Category = {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  coverImage?: string;
+  galleryImages?: { url: string; alt?: string; sortOrder?: number }[];
+  sortOrder?: number;
+  isActive?: boolean;
+};
+
+type Product = {
+  _id: string;
+  name: string;
+  slug: string;
+  category: Category | string;
+  summary?: string;
+  description?: string;
+  images?: { url: string; alt?: string; sortOrder?: number }[];
+  tags?: string[];
+  sortOrder?: number;
+  isFeatured?: boolean;
+  isActive?: boolean;
+};
+
+type SiteSettings = {
+  companyName?: string;
+  email?: string;
+  phones?: string[];
+  address?: string;
+  contactPerson?: string;
+  workingHours?: string;
+  whatsapp?: string;
+  logoUrl?: string;
+  footerText?: string;
+  copyrightText?: string;
+  menuItems?: { label: string; path: string; isActive?: boolean }[];
+};
+
+type ContentBlock = {
+  _id?: string;
+  key: string;
+  title?: string;
+  subtitle?: string;
+  body?: string;
+  image?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  thumbnail?: string;
+  items?: unknown[];
+  isActive?: boolean;
+};
+
+type HomeSlide = {
+  word: string;
+  eyebrow: string;
+  description: string;
+  images: string[];
+};
+
+type GalleryImage = {
+  url: string;
+  alt: string;
+};
+
+function AdminDashboard() {
+  const [token, setToken] = useState("");
+  const [tab, setTab] = useState<"all-products" | "categories" | "menu" | "contact" | "site-options" | "pages">("all-products");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [settings, setSettings] = useState<SiteSettings>({});
+  const [blocks, setBlocks] = useState<ContentBlock[]>([]);
+
+  const isLoggedIn = Boolean(token);
+
+  useEffect(() => {
+    setToken(window.localStorage.getItem(tokenKey) || "");
+  }, []);
+
+  async function api<T>(path: string, options: RequestInit = {}) {
+    const headers = new Headers(options.headers);
+    if (!(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+
+    const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(result.message || "Request failed.");
+    }
+
+    return result as T;
+  }
+
+  async function loadData() {
+    setLoading(true);
+    setMessage("");
+    try {
+      const [categoryRes, productRes, settingsRes, contentRes] = await Promise.all([
+        api<{ data: Category[] }>("/api/categories?includeInactive=true"),
+        api<{ data: Product[] }>("/api/products?includeInactive=true&limit=100"),
+        api<{ data: SiteSettings }>("/api/site-settings"),
+        api<{ data: ContentBlock[] }>("/api/content?includeInactive=true"),
+      ]);
+
+      setCategories(categoryRes.data || []);
+      setProducts(productRes.data || []);
+      setSettings(settingsRes.data || {});
+      setBlocks(contentRes.data || []);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not load dashboard data.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (isLoggedIn) void loadData();
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    if (!message) return;
+    const timer = window.setTimeout(() => setMessage(""), 3500);
+    return () => window.clearTimeout(timer);
+  }, [message]);
+
+  function saveToken(nextToken: string) {
+    window.localStorage.setItem(tokenKey, nextToken);
+    setToken(nextToken);
+  }
+
+  function logout() {
+    window.localStorage.removeItem(tokenKey);
+    setToken("");
+  }
+
+  return (
+    <main className="min-h-screen bg-secondary/40 text-foreground">
+      {message && (
+        <div className="fixed right-5 top-5 z-[100] flex max-w-sm items-start gap-3 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm text-emerald-950 shadow-xl">
+          <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+          <span className="flex-1">{message}</span>
+          <button type="button" onClick={() => setMessage("")} aria-label="Close notification" className="text-emerald-800/60 hover:text-emerald-950">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+      <header className="border-b border-border bg-card">
+        <div className="container-x flex flex-wrap items-center justify-between gap-4 py-5">
+          <div>
+            <p className="eyebrow">Mart Tex</p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-normal">Admin Dashboard</h1>
+          </div>
+          {isLoggedIn && (
+            <div className="flex flex-wrap gap-2">
+              <button className="btn-outline" onClick={loadData} type="button">
+                <RefreshCw className="h-4 w-4" /> Refresh
+              </button>
+              <button className="btn-outline" onClick={logout} type="button">
+                <LogOut className="h-4 w-4" /> Logout
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
+
+      <div className="container-x py-8">
+        {!isLoggedIn ? (
+          <LoginPanel onToken={saveToken} />
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+            <aside className="h-fit rounded-xl border border-border bg-card p-3 lg:sticky lg:top-6">
+              <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Products</p>
+              <SidebarButton icon={Boxes} label="All products" active={tab === "all-products"} onClick={() => setTab("all-products")} />
+              <SidebarButton icon={Tags} label="Categories" active={tab === "categories"} onClick={() => setTab("categories")} />
+              <div className="my-3 border-t border-border" />
+              <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Site options</p>
+              <SidebarButton icon={Menu} label="Menu" active={tab === "menu"} onClick={() => setTab("menu")} />
+              <SidebarButton icon={Contact} label="Footer & contact" active={tab === "contact"} onClick={() => setTab("contact")} />
+              <SidebarButton icon={Settings} label="Logo & branding" active={tab === "site-options"} onClick={() => setTab("site-options")} />
+              <SidebarButton icon={Type} label="Pages" active={tab === "pages"} onClick={() => setTab("pages")} />
+            </aside>
+
+            <div className="min-w-0">
+            {loading ? (
+              <div className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
+                Loading content...
+              </div>
+            ) : (
+              <>
+                {tab === "all-products" && (
+                  <ProductsPanel
+                    api={api}
+                    categories={categories}
+                    reload={loadData}
+                    setMessage={setMessage}
+                    view="list"
+                  />
+                )}
+                {tab === "categories" && (
+                  <CategoriesPanel
+                    api={api}
+                    categories={categories}
+                    reload={loadData}
+                    setMessage={setMessage}
+                  />
+                )}
+                {tab === "contact" && (
+                  <ContactPanel
+                    api={api}
+                    settings={settings}
+                    setSettings={setSettings}
+                    setMessage={setMessage}
+                  />
+                )}
+                {tab === "menu" && <MenuPanel api={api} settings={settings} setSettings={setSettings} setMessage={setMessage} />}
+                {tab === "site-options" && <SiteOptionsPanel api={api} settings={settings} setSettings={setSettings} setMessage={setMessage} />}
+                {tab === "pages" && (
+                  <PagesPanel api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />
+                )}
+              </>
+            )}
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+function LoginPanel({ onToken }: { onToken: (token: string) => void }) {
+  const [email, setEmail] = useState("admin@example.com");
+  const [password, setPassword] = useState("change-me-now");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function login(event: React.FormEvent) {
+    event.preventDefault();
+    setMessage("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        setMessage(result.message || "Login failed.");
+        return;
+      }
+
+      onToken(result.token);
+    } catch {
+      setMessage("Could not reach the backend. Make sure http://127.0.0.1:4000 is running.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={login} className="mx-auto max-w-md rounded-lg border border-border bg-card p-6 shadow-sm">
+      <h2 className="text-xl font-semibold tracking-normal">Login</h2>
+      <div className="mt-5 grid gap-4">
+        <Field label="Email" value={email} onChange={setEmail} type="email" />
+        <Field label="Password" value={password} onChange={setPassword} type="password" />
+        {message && <p className="text-sm text-destructive">{message}</p>}
+        <button className="btn-primary" type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function ProductsPanel({
+  api,
+  categories,
+  reload,
+  setMessage,
+  view,
+}: {
+  api: <T>(path: string, options?: RequestInit) => Promise<T>;
+  categories: Category[];
+  reload: () => Promise<void>;
+  setMessage: (message: string) => void;
+  view: "list" | "form";
+}) {
+  const emptyProduct = useMemo(
+    () => ({
+      name: "",
+      category: categories[0]?._id || "",
+      summary: "",
+      description: "",
+      tagsText: "",
+      imageUrl: "",
+      isFeatured: false,
+      isActive: true,
+    }),
+    [categories],
+  );
+  const [form, setForm] = useState(emptyProduct);
+
+  useEffect(() => setForm(emptyProduct), [emptyProduct]);
+
+  async function saveProduct(event: React.FormEvent) {
+    event.preventDefault();
+    const editId = (form as typeof form & { _id?: string })._id;
+    const body = {
+      name: form.name,
+      category: form.category,
+      summary: form.summary,
+      description: form.description,
+      tags: form.tagsText.split(",").map((tag) => tag.trim()).filter(Boolean),
+      images: form.imageUrl ? [{ url: form.imageUrl, alt: form.name, sortOrder: 0 }] : [],
+      isFeatured: form.isFeatured,
+      isActive: form.isActive,
+    };
+
+    await api(editId ? `/api/products/${editId}` : "/api/products", {
+      method: editId ? "PATCH" : "POST",
+      body: JSON.stringify(body),
+    });
+
+    if (!editId && form.imageUrl) {
+      const category = categories.find((item) => item._id === form.category);
+      if (category) {
+        const galleryImages = [
+          ...(category.galleryImages || []),
+          {
+            url: form.imageUrl,
+            alt: form.name,
+            sortOrder: category.galleryImages?.length || 0,
+          },
+        ];
+        await api(`/api/categories/${category._id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ galleryImages }),
+        });
+      }
+    }
+    setMessage("Product saved.");
+    setForm(emptyProduct);
+    await reload();
+  }
+
+  async function uploadImage(file: File) {
+    const body = new FormData();
+    body.append("image", file);
+    const result = await api<{ data: { url: string } }>("/api/uploads/image", {
+      method: "POST",
+      body,
+    });
+    setForm((current) => ({ ...current, imageUrl: `${API_URL}${result.data.url}` }));
+    setMessage("Image uploaded. Save the product to keep it.");
+  }
+
+  async function uploadGalleryImages(category: Category, files: File[]) {
+    if (!files.length) return;
+    setMessage(`Uploading ${files.length} image${files.length === 1 ? "" : "s"}...`);
+    const uploadedImages = [];
+
+    for (const file of files) {
+      const body = new FormData();
+      body.append("image", file);
+      const uploaded = await api<{ data: { url: string } }>("/api/uploads/image", {
+        method: "POST",
+        body,
+      });
+      uploadedImages.push({
+        url: uploaded.data.url,
+        alt: category.name,
+        sortOrder: (category.galleryImages?.length || 0) + uploadedImages.length,
+      });
+    }
+
+    const galleryImages = [
+      ...(category.galleryImages || []),
+      ...uploadedImages,
+    ];
+    await api(`/api/categories/${category._id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ galleryImages }),
+    });
+    setMessage(`${files.length} product image${files.length === 1 ? "" : "s"} added.`);
+    await reload();
+  }
+
+  async function deleteGalleryImage(category: Category, imageIndex: number) {
+    const galleryImages = (category.galleryImages || [])
+      .filter((_, index) => index !== imageIndex)
+      .map((image, index) => ({ ...image, sortOrder: index }));
+    await api(`/api/categories/${category._id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ galleryImages }),
+    });
+    setMessage("Product image deleted.");
+    await reload();
+  }
+
+  return (
+    <section className="grid gap-6">
+      {view === "form" && (
+      <form onSubmit={saveProduct} className="rounded-lg border border-border bg-card p-5">
+        <PanelTitle title="Product" action="Add or edit product" />
+        <div className="mt-5 grid gap-4">
+          <Field label="Name" value={form.name} onChange={(value) => setForm({ ...form, name: value })} />
+          <label className="grid gap-2 text-sm font-medium">
+            Category
+            <select
+              value={form.category}
+              onChange={(event) => setForm({ ...form, category: event.target.value })}
+              className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+            >
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Field label="Summary" value={form.summary} onChange={(value) => setForm({ ...form, summary: value })} />
+          <TextArea
+            label="Description"
+            value={form.description}
+            onChange={(value) => setForm({ ...form, description: value })}
+          />
+          <Field
+            label="Tags"
+            value={form.tagsText}
+            onChange={(value) => setForm({ ...form, tagsText: value })}
+            placeholder="knit, cotton, export"
+          />
+          <Field
+            label="Image URL"
+            value={form.imageUrl}
+            onChange={(value) => setForm({ ...form, imageUrl: value })}
+          />
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-background px-4 py-3 text-sm">
+            <ImagePlus className="h-4 w-4" />
+            Upload image
+            <input
+              className="hidden"
+              type="file"
+              accept="image/*"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void uploadImage(file);
+              }}
+            />
+          </label>
+          <Check label="Featured" checked={form.isFeatured} onChange={(value) => setForm({ ...form, isFeatured: value })} />
+          <Check label="Active" checked={form.isActive} onChange={(value) => setForm({ ...form, isActive: value })} />
+          <div className="flex flex-wrap gap-2">
+            <button className="btn-primary" type="submit"><Save className="h-4 w-4" /> Save product</button>
+          </div>
+        </div>
+      </form>
+      )}
+
+      {view === "list" && (
+      <div className="grid gap-5">
+        {categories.map((category) => (
+          <article key={category._id} className="rounded-xl border border-border bg-card p-5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-semibold">{category.name}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {category.galleryImages?.length || 0} product images
+                </p>
+              </div>
+              <label className="btn-outline cursor-pointer px-4 py-2">
+                <ImagePlus className="h-4 w-4" /> Add image
+                <input
+                  className="hidden"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files || []);
+                    if (files.length) void uploadGalleryImages(category, files);
+                    event.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {(category.galleryImages || []).map((image, imageIndex) => (
+                <div key={`${image.url}-${imageIndex}`} className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-border bg-secondary">
+                  <img src={adminAssetUrl(image.url)} alt={image.alt || category.name} className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    aria-label="Delete product image"
+                    onClick={() => void deleteGalleryImage(category, imageIndex)}
+                    className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-background/95 text-destructive opacity-0 shadow transition group-hover:opacity-100"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+      )}
+    </section>
+  );
+}
+
+function CategoriesPanel({
+  api,
+  categories,
+  reload,
+  setMessage,
+}: {
+  api: <T>(path: string, options?: RequestInit) => Promise<T>;
+  categories: Category[];
+  reload: () => Promise<void>;
+  setMessage: (message: string) => void;
+}) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
+  async function addCategory(event: React.FormEvent) {
+    event.preventDefault();
+    await api("/api/categories", {
+      method: "POST",
+      body: JSON.stringify({ name, description, isActive: true }),
+    });
+    setName("");
+    setDescription("");
+    setMessage("Category added.");
+    await reload();
+  }
+
+  async function updateCategory(category: Category, patch: Partial<Category>) {
+    await api(`/api/categories/${category._id}`, {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    });
+    setMessage("Category updated.");
+    await reload();
+  }
+
+  async function deleteCategory(category: Category) {
+    if (!window.confirm(`Delete "${category.name}"? This cannot be undone.`)) return;
+    try {
+      await api(`/api/categories/${category._id}`, { method: "DELETE" });
+      setMessage("Category deleted.");
+      await reload();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not delete category.");
+    }
+  }
+
+  return (
+    <section className="grid gap-6 lg:grid-cols-[380px_1fr]">
+      <form onSubmit={addCategory} className="rounded-lg border border-border bg-card p-5">
+        <PanelTitle title="Category" action="Add category" />
+        <div className="mt-5 grid gap-4">
+          <Field label="Name" value={name} onChange={setName} />
+          <TextArea label="Description" value={description} onChange={setDescription} />
+          <button className="btn-primary" type="submit">
+            <Plus className="h-4 w-4" /> Add category
+          </button>
+        </div>
+      </form>
+      <div className="grid gap-3">
+        {categories.map((category) => (
+          <article key={category._id} className="rounded-xl border border-border bg-card p-4">
+            <div className="grid gap-3 md:grid-cols-[1fr_1.6fr_auto_auto]">
+              <Field
+                label="Name"
+                value={category.name}
+                onChange={(value) => updateCategory(category, { name: value })}
+              />
+              <Field
+                label="Description"
+                value={category.description || ""}
+                onChange={(value) => updateCategory(category, { description: value })}
+              />
+              <Check
+                label="Active"
+                checked={category.isActive !== false}
+                onChange={(value) => updateCategory(category, { isActive: value })}
+              />
+              <button
+                type="button"
+                onClick={() => void deleteCategory(category)}
+                className="btn-outline self-end px-3 py-2.5 text-destructive hover:border-destructive"
+                aria-label={`Delete ${category.name}`}
+              >
+                <Trash2 className="h-4 w-4" /> Delete
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ContactPanel({
+  api,
+  settings,
+  setSettings,
+  setMessage,
+}: {
+  api: <T>(path: string, options?: RequestInit) => Promise<T>;
+  settings: SiteSettings;
+  setSettings: (settings: SiteSettings) => void;
+  setMessage: (message: string) => void;
+}) {
+  const phonesText = settings.phones?.join(", ") || "";
+
+  async function saveContact(event: React.FormEvent) {
+    event.preventDefault();
+    const result = await api<{ data: SiteSettings }>("/api/site-settings", {
+      method: "PATCH",
+      body: JSON.stringify(settings),
+    });
+    setSettings(result.data);
+    setMessage("Contact information saved.");
+  }
+
+  return (
+    <form onSubmit={saveContact} className="max-w-3xl rounded-lg border border-border bg-card p-5">
+      <PanelTitle title="Contact information" action="Shown on contact/footer areas" />
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <Field label="Company" value={settings.companyName || ""} onChange={(value) => setSettings({ ...settings, companyName: value })} />
+        <Field
+          label="Contact person name"
+          value={settings.contactPerson || ""}
+          onChange={(value) => setSettings({ ...settings, contactPerson: value })}
+          placeholder="Mukhlesur Rahman (Shakil)"
+        />
+        <Field label="Email" value={settings.email || ""} onChange={(value) => setSettings({ ...settings, email: value })} />
+        <Field
+          label="Phones"
+          value={phonesText}
+          onChange={(value) => setSettings({ ...settings, phones: value.split(",").map((phone) => phone.trim()).filter(Boolean) })}
+          placeholder="+880..., +880..."
+        />
+        <Field label="WhatsApp" value={settings.whatsapp || ""} onChange={(value) => setSettings({ ...settings, whatsapp: value })} />
+        <Field label="Working hours" value={settings.workingHours || ""} onChange={(value) => setSettings({ ...settings, workingHours: value })} />
+        <div className="sm:col-span-2">
+          <TextArea label="Address" value={settings.address || ""} onChange={(value) => setSettings({ ...settings, address: value })} />
+        </div>
+        <button className="btn-primary sm:col-span-2" type="submit">
+          <Save className="h-4 w-4" /> Save contact
+        </button>
+      </div>
+    </form>
+  );
+}
+
+const editablePages = [
+  { key: "page-home", label: "Home" },
+  { key: "page-about-header", label: "About" },
+  { key: "page-profile-header", label: "Profile" },
+  { key: "page-products-header", label: "Products" },
+  { key: "page-services-header", label: "Services" },
+  { key: "page-gallery-header", label: "Gallery" },
+  { key: "page-news-header", label: "News" },
+  { key: "page-contact-header", label: "Contact" },
+];
+
+function PagesPanel({
+  api,
+  blocks,
+  reload,
+  setMessage,
+}: {
+  api: <T>(path: string, options?: RequestInit) => Promise<T>;
+  blocks: ContentBlock[];
+  reload: () => Promise<void>;
+  setMessage: (message: string) => void;
+}) {
+  const [selectedKey, setSelectedKey] = useState(editablePages[0].key);
+  const selected = blocks.find((block) => block.key === selectedKey) || {
+    key: selectedKey,
+    isActive: true,
+  };
+  const [draft, setDraft] = useState<ContentBlock>(selected);
+  const [expandedSlide, setExpandedSlide] = useState<number | null>(0);
+  const isHome = selectedKey === "page-home";
+  const isGallery = selectedKey === "page-gallery-header";
+  const slides = (draft.items || []) as HomeSlide[];
+  const galleryImages = (draft.items || []) as GalleryImage[];
+
+  useEffect(() => setDraft(selected), [selectedKey, blocks]);
+
+  async function uploadThumbnail(file: File) {
+    const body = new FormData();
+    body.append("image", file);
+    const result = await api<{ data: { url: string } }>("/api/uploads/image", {
+      method: "POST",
+      body,
+    });
+    setDraft((current) => ({ ...current, thumbnail: result.data.url }));
+    setMessage("SEO thumbnail uploaded. Save the page to publish it.");
+  }
+
+  function updateSlide(index: number, patch: Partial<HomeSlide>) {
+    setDraft({
+      ...draft,
+      items: slides.map((slide, slideIndex) =>
+        slideIndex === index ? { ...slide, ...patch } : slide,
+      ),
+    });
+  }
+
+  async function uploadSlideImages(index: number, files: File[]) {
+    const uploadedUrls: string[] = [];
+    for (const file of files.slice(0, Math.max(3 - slides[index].images.length, 0))) {
+      const body = new FormData();
+      body.append("image", file);
+      const result = await api<{ data: { url: string } }>("/api/uploads/image", {
+        method: "POST",
+        body,
+      });
+      uploadedUrls.push(result.data.url);
+    }
+    updateSlide(index, { images: [...slides[index].images, ...uploadedUrls].slice(0, 3) });
+    setMessage("Slider images uploaded. Save the page to publish them.");
+  }
+
+  async function uploadPageGalleryImages(files: File[]) {
+    const uploaded: GalleryImage[] = [];
+    for (const file of files) {
+      const body = new FormData();
+      body.append("image", file);
+      const result = await api<{ data: { url: string } }>("/api/uploads/image", {
+        method: "POST",
+        body,
+      });
+      uploaded.push({ url: result.data.url, alt: file.name.replace(/\.[^.]+$/, "") });
+    }
+    setDraft({ ...draft, items: [...galleryImages, ...uploaded] });
+    setMessage(`${uploaded.length} gallery image${uploaded.length === 1 ? "" : "s"} uploaded. Save the page to publish.`);
+  }
+
+  async function savePage(event: React.FormEvent) {
+    event.preventDefault();
+    await api(`/api/content/${draft.key}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        title: draft.title || "",
+        body: draft.body || "",
+        seoTitle: draft.seoTitle || "",
+        seoDescription: draft.seoDescription || "",
+        thumbnail: draft.thumbnail || "",
+        items: draft.items || [],
+        isActive: draft.isActive !== false,
+      }),
+    });
+    setMessage("Page heading and description saved.");
+    await reload();
+  }
+
+  return (
+    <section className="grid gap-6 lg:grid-cols-[280px_1fr]">
+      <div className="rounded-lg border border-border bg-card p-4">
+        <PanelTitle title="Pages" action="Choose a page" />
+        <div className="mt-4 grid gap-2">
+          {editablePages.map((page) => (
+            <button
+              key={page.key}
+              onClick={() => setSelectedKey(page.key)}
+              className={`rounded-lg border px-3 py-2 text-left text-sm ${
+                selectedKey === page.key ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background"
+              }`}
+              type="button"
+            >
+              {page.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <form onSubmit={savePage} className="rounded-lg border border-border bg-card p-5">
+        <PanelTitle
+          title={`${editablePages.find((page) => page.key === selectedKey)?.label || "Page"} header`}
+          action="Top heading and description"
+        />
+        <div className="mt-5 grid gap-4">
+          {isHome ? (
+            <div className="grid gap-5">
+              {slides.map((slide, slideIndex) => (
+                <div key={slideIndex} className="rounded-xl border border-border bg-background p-4">
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedSlide((current) => (current === slideIndex ? null : slideIndex))
+                      }
+                      className="flex flex-1 items-center justify-between gap-3 text-left"
+                    >
+                      <span>
+                        <span className="block font-semibold">Slide {slideIndex + 1}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {slide.word || "Untitled slide"}
+                        </span>
+                      </span>
+                      <ChevronDown
+                        className={`h-5 w-5 transition-transform ${
+                          expandedSlide === slideIndex ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-outline px-3 py-2 text-destructive"
+                      onClick={() =>
+                        setDraft({
+                          ...draft,
+                          items: slides.filter((_, index) => index !== slideIndex),
+                        })
+                      }
+                    >
+                      <Trash2 className="h-4 w-4" /> Remove
+                    </button>
+                  </div>
+                  {expandedSlide === slideIndex && <div className="grid gap-4 border-t border-border pt-4">
+                    <Field label="Large word" value={slide.word} onChange={(value) => updateSlide(slideIndex, { word: value })} placeholder="CRAFT" />
+                    <Field label="Eyebrow" value={slide.eyebrow} onChange={(value) => updateSlide(slideIndex, { eyebrow: value })} />
+                    <TextArea label="Description" value={slide.description} onChange={(value) => updateSlide(slideIndex, { description: value })} />
+                    <div>
+                      <p className="mb-2 text-sm font-medium">Model images (maximum 3)</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        {slide.images.map((image, imageIndex) => (
+                          <div key={`${image}-${imageIndex}`} className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-border bg-secondary">
+                            <img src={adminAssetUrl(image)} alt="" className="h-full w-full object-contain" />
+                            <button
+                              type="button"
+                              onClick={() => updateSlide(slideIndex, { images: slide.images.filter((_, index) => index !== imageIndex) })}
+                              className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white text-destructive shadow"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    {slide.images.length < 3 && (
+                      <label className="btn-outline w-fit cursor-pointer">
+                        <ImagePlus className="h-4 w-4" /> Add images
+                        <input
+                          className="hidden"
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={(event) => {
+                            const files = Array.from(event.target.files || []);
+                            if (files.length) void uploadSlideImages(slideIndex, files);
+                            event.target.value = "";
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>}
+                </div>
+              ))}
+              <button
+                type="button"
+                className="btn-outline w-fit"
+                onClick={() =>
+                  {
+                    setDraft({
+                      ...draft,
+                      items: [
+                        ...slides,
+                        { word: "NEW", eyebrow: "New collection", description: "", images: [] },
+                      ],
+                    });
+                    setExpandedSlide(slides.length);
+                  }
+                }
+              >
+                <Plus className="h-4 w-4" /> Add slide
+              </button>
+            </div>
+          ) : (
+            <>
+              <Field label="Top heading" value={draft.title || ""} onChange={(value) => setDraft({ ...draft, title: value })} />
+              <TextArea label="Description" value={draft.body || ""} onChange={(value) => setDraft({ ...draft, body: value })} />
+              {isGallery && (
+                <div className="grid gap-4 rounded-xl border border-border bg-background p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold">Gallery images</h3>
+                      <p className="text-xs text-muted-foreground">{galleryImages.length} images</p>
+                    </div>
+                    <label className="btn-outline cursor-pointer">
+                      <ImagePlus className="h-4 w-4" /> Add images
+                      <input
+                        className="hidden"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(event) => {
+                          const files = Array.from(event.target.files || []);
+                          if (files.length) void uploadPageGalleryImages(files);
+                          event.target.value = "";
+                        }}
+                      />
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {galleryImages.map((image, imageIndex) => (
+                      <div key={`${image.url}-${imageIndex}`} className="relative overflow-hidden rounded-lg border border-border">
+                        <img src={adminAssetUrl(image.url)} alt={image.alt} className="aspect-[4/3] w-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setDraft({
+                              ...draft,
+                              items: galleryImages.filter((_, index) => index !== imageIndex),
+                            })
+                          }
+                          className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white text-destructive shadow"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <input
+                          value={image.alt}
+                          onChange={(event) =>
+                            setDraft({
+                              ...draft,
+                              items: galleryImages.map((item, index) =>
+                                index === imageIndex ? { ...item, alt: event.target.value } : item,
+                              ),
+                            })
+                          }
+                          className="w-full border-t border-border bg-white px-2 py-2 text-xs"
+                          placeholder="Image alt text"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+          <div className="my-1 border-t border-border" />
+          <PanelTitle title="SEO settings" action="Search and social sharing" />
+          <Field
+            label="SEO title"
+            value={draft.seoTitle || ""}
+            onChange={(value) => setDraft({ ...draft, seoTitle: value })}
+            placeholder="Page title shown in search results"
+          />
+          <TextArea
+            label="Meta description"
+            value={draft.seoDescription || ""}
+            onChange={(value) => setDraft({ ...draft, seoDescription: value })}
+          />
+          <Field
+            label="Thumbnail URL"
+            value={draft.thumbnail || ""}
+            onChange={(value) => setDraft({ ...draft, thumbnail: value })}
+          />
+          <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-background px-4 py-3 text-sm">
+            <ImagePlus className="h-4 w-4" /> Upload thumbnail
+            <input
+              className="hidden"
+              type="file"
+              accept="image/*"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void uploadThumbnail(file);
+              }}
+            />
+          </label>
+          {draft.thumbnail && (
+            <img
+              src={adminAssetUrl(draft.thumbnail)}
+              alt="SEO thumbnail preview"
+              className="aspect-[1.91/1] w-full max-w-md rounded-lg border border-border object-cover"
+            />
+          )}
+          <button className="btn-primary" type="submit">
+            <Save className="h-4 w-4" /> Save page
+          </button>
+        </div>
+      </form>
+    </section>
+  );
+}
+
+function MenuPanel({
+  api,
+  settings,
+  setSettings,
+  setMessage,
+}: {
+  api: <T>(path: string, options?: RequestInit) => Promise<T>;
+  settings: SiteSettings;
+  setSettings: (settings: SiteSettings) => void;
+  setMessage: (message: string) => void;
+}) {
+  const items = settings.menuItems || [];
+
+  function updateItem(index: number, patch: Partial<(typeof items)[number]>) {
+    setSettings({ ...settings, menuItems: items.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item) });
+  }
+
+  async function saveMenu() {
+    const result = await api<{ data: SiteSettings }>("/api/site-settings", {
+      method: "PATCH",
+      body: JSON.stringify({ menuItems: items }),
+    });
+    setSettings(result.data);
+    setMessage("Website menu saved.");
+  }
+
+  return (
+    <section className="max-w-4xl rounded-xl border border-border bg-card p-5">
+      <PanelTitle title="Website menu" action="Header and footer navigation" />
+      <div className="mt-5 grid gap-3">
+        {items.map((item, index) => (
+          <div key={`${item.path}-${index}`} className="grid gap-3 rounded-lg border border-border bg-background p-4 md:grid-cols-[1fr_1.4fr_auto_auto]">
+            <Field label="Label" value={item.label} onChange={(value) => updateItem(index, { label: value })} />
+            <Field label="Path" value={item.path} onChange={(value) => updateItem(index, { path: value })} placeholder="/about" />
+            <Check label="Visible" checked={item.isActive !== false} onChange={(value) => updateItem(index, { isActive: value })} />
+            <button type="button" className="btn-outline self-end px-3 py-2.5" onClick={() => setSettings({ ...settings, menuItems: items.filter((_, itemIndex) => itemIndex !== index) })}><Trash2 className="h-4 w-4" /></button>
+          </div>
+        ))}
+        <button type="button" className="btn-outline w-fit" onClick={() => setSettings({ ...settings, menuItems: [...items, { label: "New link", path: "/", isActive: true }] })}>
+          <FilePlus2 className="h-4 w-4" /> Add menu item
+        </button>
+        <button type="button" className="btn-primary w-fit" onClick={saveMenu}><Save className="h-4 w-4" /> Save menu</button>
+      </div>
+    </section>
+  );
+}
+
+function SiteOptionsPanel({
+  api,
+  settings,
+  setSettings,
+  setMessage,
+}: {
+  api: <T>(path: string, options?: RequestInit) => Promise<T>;
+  settings: SiteSettings;
+  setSettings: (settings: SiteSettings) => void;
+  setMessage: (message: string) => void;
+}) {
+  async function uploadLogo(file: File) {
+    const body = new FormData();
+    body.append("image", file);
+    const result = await api<{ data: { url: string } }>("/api/uploads/image", { method: "POST", body });
+    setSettings({ ...settings, logoUrl: result.data.url });
+    setMessage("Logo uploaded. Save branding to publish it.");
+  }
+
+  async function saveOptions(event: React.FormEvent) {
+    event.preventDefault();
+    const result = await api<{ data: SiteSettings }>("/api/site-settings", {
+      method: "PATCH",
+      body: JSON.stringify({
+        companyName: settings.companyName || "",
+        logoUrl: settings.logoUrl || "",
+        footerText: settings.footerText || "",
+        copyrightText: settings.copyrightText || "",
+      }),
+    });
+    setSettings(result.data);
+    setMessage("Branding options saved.");
+  }
+
+  return (
+    <form onSubmit={saveOptions} className="max-w-3xl rounded-xl border border-border bg-card p-5">
+      <PanelTitle title="Logo and branding" action="Used across header and footer" />
+      <div className="mt-5 grid gap-4">
+        <Field label="Company name" value={settings.companyName || ""} onChange={(value) => setSettings({ ...settings, companyName: value })} />
+        <Field label="Logo URL" value={settings.logoUrl || ""} onChange={(value) => setSettings({ ...settings, logoUrl: value })} />
+        <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-background px-4 py-3 text-sm">
+          <ImagePlus className="h-4 w-4" /> Upload logo
+          <input className="hidden" type="file" accept="image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadLogo(file); }} />
+        </label>
+        {settings.logoUrl && <img src={settings.logoUrl.startsWith("http") ? settings.logoUrl : `${API_URL}${settings.logoUrl}`} alt="Logo preview" className="h-20 w-auto max-w-xs rounded-lg border border-border bg-background p-3 object-contain" />}
+        <TextArea label="Footer description" value={settings.footerText || ""} onChange={(value) => setSettings({ ...settings, footerText: value })} />
+        <Field label="Copyright text" value={settings.copyrightText || ""} onChange={(value) => setSettings({ ...settings, copyrightText: value })} />
+        <button className="btn-primary w-fit" type="submit"><Save className="h-4 w-4" /> Save branding</button>
+      </div>
+    </form>
+  );
+}
+
+function SidebarButton({
+  icon: Icon,
+  label,
+  active,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button type="button" onClick={onClick} className={`mb-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${active ? "bg-primary text-primary-foreground" : "text-foreground/75 hover:bg-secondary hover:text-primary"}`}>
+      <Icon className="h-4 w-4" /> {label}
+    </button>
+  );
+}
+
+function PanelTitle({ title, action }: { title: string; action: string }) {
+  return (
+    <div>
+      <p className="eyebrow">{action}</p>
+      <h2 className="mt-1 text-xl font-semibold tracking-normal">{title}</h2>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  type = "text",
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+  placeholder?: string;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-medium">
+      {label}
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        type={type}
+        placeholder={placeholder}
+        className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+      />
+    </label>
+  );
+}
+
+function TextArea({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-medium">
+      {label}
+      <textarea
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        rows={4}
+        className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+      />
+    </label>
+  );
+}
+
+function Check({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <label className="flex items-center gap-2 text-sm font-medium">
+      <input
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        type="checkbox"
+        className="h-4 w-4 rounded border-input"
+      />
+      {label}
+    </label>
+  );
+}

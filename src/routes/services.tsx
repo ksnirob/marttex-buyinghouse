@@ -15,7 +15,7 @@ export const Route = createFileRoute("/services")({
   component: Services,
   head: () => ({
     meta: [
-      { title: "Services — MartXBD" },
+      { title: "Services — Mart Tex" },
       {
         name: "description",
         content: "Sourcing, sampling, production, QA, compliance and logistics services.",

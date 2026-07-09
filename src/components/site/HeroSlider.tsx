@@ -13,12 +13,13 @@ import s3b from "@/assets/model-s3-male2.png";
 import s4a from "@/assets/model-s4-male1.png";
 import s4k from "@/assets/model-s4-kid.png";
 import s4b from "@/assets/model-s4-male2.png";
+import { API_URL, assetUrl } from "@/lib/site-api";
 
 type Scene = {
   word: string;
   eyebrow: string;
   desc: string;
-  models: [string, string, string];
+  models: string[];
 };
 
 const scenes: Scene[] = [
@@ -47,7 +48,9 @@ const HOLD = 4200;
 export function HeroSlider() {
   const [i, setI] = useState(0);
   const [transitioning, setTransitioning] = useState(false);
-  const total = scenes.length;
+  const [dynamicScenes, setDynamicScenes] = useState<Scene[]>([]);
+  const activeScenes = dynamicScenes.length ? dynamicScenes : scenes;
+  const total = activeScenes.length;
 
   const go = (n: number) => {
     setTransitioning(true);
@@ -63,7 +66,50 @@ export function HeroSlider() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
 
-  const s = scenes[i];
+  useEffect(() => {
+    fetch(`${API_URL}/api/content/page-home`)
+      .then((response) => response.json())
+      .then((result) => {
+        const content = result.data;
+        const items = Array.isArray(content?.items) ? content.items : [];
+        const nextScenes = items
+          .map((item: { word?: string; eyebrow?: string; description?: string; images?: string[] }) => ({
+            word: item.word || "CREATE",
+            eyebrow: item.eyebrow || "",
+            desc: item.description || "",
+            models: (item.images || []).map(assetUrl),
+          }))
+          .filter((item: Scene) => item.models.length > 0);
+        if (nextScenes.length) {
+          setDynamicScenes(nextScenes);
+          setI(0);
+        }
+
+        if (content?.seoTitle) document.title = content.seoTitle;
+        const metadata = [
+          ["name", "description", content?.seoDescription],
+          ["property", "og:title", content?.seoTitle],
+          ["property", "og:description", content?.seoDescription],
+          ["property", "og:image", assetUrl(content?.thumbnail)],
+          ["name", "twitter:title", content?.seoTitle],
+          ["name", "twitter:description", content?.seoDescription],
+          ["name", "twitter:image", assetUrl(content?.thumbnail)],
+        ];
+        metadata.forEach(([attribute, key, value]) => {
+          if (!value) return;
+          let meta = document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`);
+          if (!meta) {
+            meta = document.createElement("meta");
+            meta.setAttribute(attribute, key);
+            document.head.appendChild(meta);
+          }
+          meta.content = value;
+        });
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const s = activeScenes[i] || activeScenes[0];
 
   return (
     <div className="relative isolate overflow-hidden bg-[oklch(0.975_0.006_205)]">
@@ -180,7 +226,7 @@ export function HeroSlider() {
             <ChevronRight className="h-4 w-4" />
           </button>
           <div className="ml-3 flex items-center gap-2">
-            {scenes.map((_, idx) => (
+            {activeScenes.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => idx !== i && go(idx)}

@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid()) @db.VarChar(30)
+  name         String   @db.VarChar(191)
+  email        String   @unique @db.VarChar(191)
+  passwordHash String   @db.VarChar(191)
+  role         String   @default("admin") @db.VarChar(30)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid()) @db.VarChar(30)
+  name        String    @db.VarChar(191)
+  slug        String    @unique @db.VarChar(191)
+  description String    @default("") @db.Text
+  coverImage  String    @default("") @db.Text
+  galleryImages Json?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@index([sortOrder, name])
+}
+
+model Product {
+  id          String   @id @default(cuid()) @db.VarChar(30)
+  name        String   @db.VarChar(191)
+  slug        String   @unique @db.VarChar(191)
+  categoryId  String   @db.VarChar(30)
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  summary     String   @default("") @db.Text
+  description String   @default("") @db.LongText
+  images      Json
+  tags        Json
+  sortOrder   Int      @default(0)
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([categoryId, sortOrder, name])
+  @@index([isActive, isFeatured])
+}
+
+model Enquiry {
+  id        String   @id @default(cuid()) @db.VarChar(30)
+  name      String   @db.VarChar(191)
+  company   String   @default("") @db.VarChar(191)
+  email     String   @db.VarChar(191)
+  phone     String   @default("") @db.VarChar(100)
+  category  String   @default("") @db.VarChar(191)
+  quantity  String   @default("") @db.VarChar(100)
+  message   String   @db.Text
+  status    String   @default("new") @db.VarChar(30)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model SiteSetting {
+  id            String   @id @default(cuid()) @db.VarChar(30)
+  companyName   String   @default("Mart Tex") @db.VarChar(191)
+  email         String   @default("") @db.VarChar(191)
+  phones        Json
+  address       String   @default("") @db.Text
+  contactPerson String   @default("") @db.VarChar(191)
+  workingHours  String   @default("") @db.VarChar(191)
+  whatsapp      String   @default("") @db.VarChar(100)
+  logoUrl       String   @default("") @db.Text
+  footerText    String   @default("") @db.Text
+  copyrightText String   @default("") @db.VarChar(255)
+  menuItems     Json?
+  socials       Json
+  seo           Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ContentBlock {
+  id        String   @id @default(cuid()) @db.VarChar(30)
+  key       String   @unique @db.VarChar(191)
+  title     String   @default("") @db.VarChar(255)
+  subtitle  String   @default("") @db.VarChar(255)
+  body      String   @default("") @db.LongText
+  image     String   @default("") @db.Text
+  seoTitle       String   @default("") @db.VarChar(255)
+  seoDescription String   @default("") @db.Text
+  thumbnail      String   @default("") @db.Text
+  items     Json
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
