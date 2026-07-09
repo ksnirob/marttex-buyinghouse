@@ -179,14 +179,14 @@ function AdminDashboard() {
             <h1 className="mt-1 text-2xl font-semibold tracking-normal">Admin Dashboard</h1>
           </div>
           {isLoggedIn && (
-            <div className="flex shrink-0 gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <button className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md xl:hidden" onClick={() => setSidebarOpen(true)} type="button" aria-label="Open admin menu">
                 <Menu className="h-5 w-5" />
               </button>
-              <button className="btn-outline h-10 !w-10 !p-0 sm:!w-auto sm:!px-5" onClick={loadData} type="button" aria-label="Refresh dashboard">
+              <button className="btn-outline h-10 !w-10 !p-0 sm:h-11 sm:!w-[128px] sm:justify-center sm:!px-5 sm:!py-0" onClick={loadData} type="button" aria-label="Refresh dashboard">
                 <RefreshCw className="h-4 w-4" /> <span className="hidden sm:inline">Refresh</span>
               </button>
-              <button className="btn-outline hidden xl:inline-flex" onClick={logout} type="button">
+              <button className="btn-outline hidden h-11 !w-[128px] justify-center !px-5 !py-0 xl:inline-flex" onClick={logout} type="button">
                 <LogOut className="h-4 w-4" /> Logout
               </button>
             </div>
