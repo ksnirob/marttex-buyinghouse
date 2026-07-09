@@ -4,6 +4,8 @@ import { ArrowLeft, Calendar } from "lucide-react";
 import factory from "@/assets/factory.jpg";
 import sourcing from "@/assets/sourcing.jpg";
 import quality from "@/assets/quality.jpg";
+import { useEffect, useState } from "react";
+import { API_URL, assetUrl } from "@/lib/site-api";
 
 export const articles = [
   {
@@ -75,7 +77,26 @@ export const Route = createFileRoute("/news/$slug")({
 
 function NewsDetail() {
   const { slug } = Route.useParams();
-  const article = articles.find((a) => a.slug === slug);
+  const [article, setArticle] = useState(articles.find((a) => a.slug === slug));
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/content/site-news`)
+      .then((response) => response.json())
+      .then((result) => {
+        const item = Array.isArray(result.data?.items)
+          ? result.data.items.find((entry: { slug: string }) => entry.slug === slug)
+          : null;
+        if (item) {
+          setArticle({
+            ...item,
+            img: assetUrl(item.image),
+            body:
+              typeof item.body === "string" ? item.body.split(/\n\s*\n/) : item.body,
+          });
+        }
+      })
+      .catch(() => undefined);
+  }, [slug]);
 
   if (!article) {
     return (

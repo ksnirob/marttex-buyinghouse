@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { assetUrl, type ApiCategory, type SiteSettings } from "@/lib/site-api";
@@ -16,10 +16,11 @@ const defaultMenu = [
 export function Nav({ settings, categories }: { settings: SiteSettings; categories: ApiCategory[] }) {
   const [open, setOpen] = useState(false);
   const [mobileProducts, setMobileProducts] = useState(false);
+  const location = useLocation();
   const menu = (settings.menuItems?.length ? settings.menuItems : defaultMenu).filter(
     (item) => item.isActive !== false,
   );
-  const logo = assetUrl(settings.logoUrl);
+  const logo = assetUrl(settings.logoUrl || "/uploads/mart-tex-logo.svg");
   const company = settings.companyName || "Mart Tex";
 
   return (
@@ -42,24 +43,24 @@ export function Nav({ settings, categories }: { settings: SiteSettings; categori
           {menu.map((item) =>
             item.path === "/products" ? (
               <div className="group relative" key={item.path}>
-                <a href="/products" className="inline-flex items-center gap-1 text-sm text-foreground/80 hover:text-primary">
+                <Link to="/products" className={`inline-flex items-center gap-1 border-b-2 py-2 text-sm transition ${location.pathname.startsWith("/products") ? "border-primary text-primary" : "border-transparent text-foreground/80 hover:text-primary"}`}>
                   {item.label} <ChevronDown className="h-4 w-4 transition group-hover:rotate-180" />
-                </a>
+                </Link>
                 <div className="invisible absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 translate-y-2 opacity-0 transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                   <div className="mt-3 rounded-2xl border border-border bg-card p-2 shadow-2xl">
-                    <a href="/products" className="flex rounded-lg px-4 py-2.5 text-sm hover:bg-secondary">All Products</a>
+                    <Link to="/products" className="flex rounded-lg px-4 py-2.5 text-sm hover:bg-secondary">All Products</Link>
                     {categories.map((category) => (
-                      <a key={category._id} href={`/products/${category.slug}`} className="flex rounded-lg px-4 py-2.5 text-sm hover:bg-secondary">
+                      <Link key={category._id} to="/products/$category" params={{ category: category.slug }} className="flex rounded-lg px-4 py-2.5 text-sm hover:bg-secondary">
                         {category.name}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
               </div>
             ) : (
-              <a key={item.path} href={item.path} className="text-sm text-foreground/80 transition hover:text-primary">
+              <Link key={item.path} to={item.path as never} className={`border-b-2 py-2 text-sm transition ${location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(`${item.path}/`)) ? "border-primary text-primary" : "border-transparent text-foreground/80 hover:text-primary"}`}>
                 {item.label}
-              </a>
+              </Link>
             ),
           )}
         </nav>
@@ -85,15 +86,15 @@ export function Nav({ settings, categories }: { settings: SiteSettings; categori
                   </button>
                   {mobileProducts && (
                     <div className="ml-3 flex flex-col border-l border-border pl-3">
-                      <a href="/products" className="rounded-md px-2 py-2 text-sm hover:bg-muted">All Products</a>
+                      <Link to="/products" onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm hover:bg-muted">All Products</Link>
                       {categories.map((category) => (
-                        <a key={category._id} href={`/products/${category.slug}`} className="rounded-md px-2 py-2 text-sm hover:bg-muted">{category.name}</a>
+                        <Link key={category._id} to="/products/$category" params={{ category: category.slug }} onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm hover:bg-muted">{category.name}</Link>
                       ))}
                     </div>
                   )}
                 </div>
               ) : (
-                <a key={item.path} href={item.path} onClick={() => setOpen(false)} className="rounded-md px-2 py-3 text-sm hover:bg-muted">{item.label}</a>
+                <Link key={item.path} to={item.path as never} onClick={() => setOpen(false)} className={`rounded-md border-l-2 px-2 py-3 text-sm ${location.pathname === item.path ? "border-primary bg-muted text-primary" : "border-transparent hover:bg-muted"}`}>{item.label}</Link>
               ),
             )}
             <Link to="/contact" onClick={() => setOpen(false)} className="btn-primary mt-2 justify-center">Let's Talk</Link>

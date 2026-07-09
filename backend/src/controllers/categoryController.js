@@ -32,13 +32,11 @@ export const updateCategory = asyncHandler(async (req, res) => {
 });
 
 export const deleteCategory = asyncHandler(async (req, res) => {
-  const inUse = await prisma.product.count({ where: { categoryId: req.params.id } });
-  if (inUse) {
-    throw new ApiError(409, "Category has products. Move or delete products first.");
-  }
-
   const existing = await prisma.category.findUnique({ where: { id: req.params.id } });
   if (!existing) throw new ApiError(404, "Category not found.");
-  const category = await prisma.category.delete({ where: { id: req.params.id } });
+  const [, category] = await prisma.$transaction([
+    prisma.product.deleteMany({ where: { categoryId: req.params.id } }),
+    prisma.category.delete({ where: { id: req.params.id } }),
+  ]);
   res.json({ success: true, data: category });
 });

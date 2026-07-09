@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Boxes, ChevronDown, CircleCheck, Contact, FilePlus2, ImagePlus, LogOut, Menu, Plus, RefreshCw, Save, Settings, Tags, Trash2, Type, X } from "lucide-react";
+import { Boxes, ChevronDown, CircleCheck, Contact, FilePlus2, GripVertical, ImagePlus, Images, LogOut, Menu, MessageSquareQuote, Newspaper, Plus, RefreshCw, Save, Settings, Tags, Trash2, Type, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/admin")({
@@ -84,7 +84,8 @@ type GalleryImage = {
 
 function AdminDashboard() {
   const [token, setToken] = useState("");
-  const [tab, setTab] = useState<"all-products" | "categories" | "menu" | "contact" | "site-options" | "pages">("all-products");
+  const [tab, setTab] = useState<"all-products" | "categories" | "menu" | "contact" | "site-options" | "pages" | "news" | "testimonials" | "brands">("all-products");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -155,8 +156,13 @@ function AdminDashboard() {
     setToken("");
   }
 
+  function selectTab(nextTab: typeof tab) {
+    setTab(nextTab);
+    setSidebarOpen(false);
+  }
+
   return (
-    <main className="min-h-screen bg-secondary/40 text-foreground">
+    <main className="min-h-[calc(100vh+1px)] bg-secondary/40 text-foreground">
       {message && (
         <div className="fixed right-5 top-5 z-[100] flex max-w-sm items-start gap-3 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm text-emerald-950 shadow-xl">
           <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
@@ -167,17 +173,20 @@ function AdminDashboard() {
         </div>
       )}
       <header className="border-b border-border bg-card">
-        <div className="container-x flex flex-wrap items-center justify-between gap-4 py-5">
-          <div>
+        <div className="container-x flex items-start justify-between gap-3 py-5">
+          <div className="min-w-0 flex-1">
             <p className="eyebrow">Mart Tex</p>
             <h1 className="mt-1 text-2xl font-semibold tracking-normal">Admin Dashboard</h1>
           </div>
           {isLoggedIn && (
-            <div className="flex flex-wrap gap-2">
-              <button className="btn-outline" onClick={loadData} type="button">
-                <RefreshCw className="h-4 w-4" /> Refresh
+            <div className="flex shrink-0 gap-2">
+              <button className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md xl:hidden" onClick={() => setSidebarOpen(true)} type="button" aria-label="Open admin menu">
+                <Menu className="h-5 w-5" />
               </button>
-              <button className="btn-outline" onClick={logout} type="button">
+              <button className="btn-outline h-10 !w-10 !p-0 sm:!w-auto sm:!px-5" onClick={loadData} type="button" aria-label="Refresh dashboard">
+                <RefreshCw className="h-4 w-4" /> <span className="hidden sm:inline">Refresh</span>
+              </button>
+              <button className="btn-outline hidden xl:inline-flex" onClick={logout} type="button">
                 <LogOut className="h-4 w-4" /> Logout
               </button>
             </div>
@@ -189,17 +198,48 @@ function AdminDashboard() {
         {!isLoggedIn ? (
           <LoginPanel onToken={saveToken} />
         ) : (
-          <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
-            <aside className="h-fit rounded-xl border border-border bg-card p-3 lg:sticky lg:top-6">
-              <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Products</p>
-              <SidebarButton icon={Boxes} label="All products" active={tab === "all-products"} onClick={() => setTab("all-products")} />
-              <SidebarButton icon={Tags} label="Categories" active={tab === "categories"} onClick={() => setTab("categories")} />
-              <div className="my-3 border-t border-border" />
-              <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Site options</p>
-              <SidebarButton icon={Menu} label="Menu" active={tab === "menu"} onClick={() => setTab("menu")} />
-              <SidebarButton icon={Contact} label="Footer & contact" active={tab === "contact"} onClick={() => setTab("contact")} />
-              <SidebarButton icon={Settings} label="Logo & branding" active={tab === "site-options"} onClick={() => setTab("site-options")} />
-              <SidebarButton icon={Type} label="Pages" active={tab === "pages"} onClick={() => setTab("pages")} />
+          <div className="grid min-w-0 gap-6 xl:grid-cols-[250px_minmax(0,1fr)]">
+            {sidebarOpen && (
+              <button
+                type="button"
+                aria-label="Close admin menu"
+                onClick={() => setSidebarOpen(false)}
+                className="fixed inset-0 z-[80] bg-primary/35 backdrop-blur-sm xl:hidden"
+              />
+            )}
+            <aside className={`fixed inset-y-0 left-0 z-[90] block h-full w-[min(320px,85vw)] overflow-y-auto border-r border-border bg-card p-4 shadow-2xl transition-transform duration-300 xl:sticky xl:top-6 xl:z-auto xl:h-fit xl:w-[250px] xl:self-start xl:translate-x-0 xl:overflow-visible xl:rounded-xl xl:border xl:p-3 xl:shadow-none ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+              <div className="mb-4 flex items-center justify-between border-b border-border pb-3 xl:hidden">
+                <div>
+                  <p className="eyebrow">Mart Tex</p>
+                  <p className="mt-1 font-semibold">Admin menu</p>
+                </div>
+                <button type="button" onClick={() => setSidebarOpen(false)} className="grid h-10 w-10 place-items-center rounded-full border border-border" aria-label="Close menu">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="col-span-full px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Products</p>
+              <SidebarButton icon={Boxes} label="All products" active={tab === "all-products"} onClick={() => selectTab("all-products")} />
+              <SidebarButton icon={Tags} label="Categories" active={tab === "categories"} onClick={() => selectTab("categories")} />
+              <div className="col-span-full my-2 border-t border-border xl:my-3" />
+              <p className="col-span-full px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Site options</p>
+              <SidebarButton icon={Menu} label="Menu" active={tab === "menu"} onClick={() => selectTab("menu")} />
+              <SidebarButton icon={Contact} label="Footer & contact" active={tab === "contact"} onClick={() => selectTab("contact")} />
+              <SidebarButton icon={Settings} label="Logo & branding" active={tab === "site-options"} onClick={() => selectTab("site-options")} />
+              <div className="col-span-full my-2 border-t border-border xl:my-3" />
+              <p className="col-span-full px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Content</p>
+              <SidebarButton icon={Type} label="Pages" active={tab === "pages"} onClick={() => selectTab("pages")} />
+              <SidebarButton icon={Newspaper} label="News" active={tab === "news"} onClick={() => selectTab("news")} />
+              <SidebarButton icon={MessageSquareQuote} label="Testimonials" active={tab === "testimonials"} onClick={() => selectTab("testimonials")} />
+              <SidebarButton icon={Images} label="Brand logos" active={tab === "brands"} onClick={() => selectTab("brands")} />
+              <div className="mt-4 border-t border-border pt-4 xl:hidden">
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-destructive transition hover:bg-destructive/10"
+                >
+                  <LogOut className="h-4 w-4" /> Logout
+                </button>
+              </div>
             </aside>
 
             <div className="min-w-0">
@@ -239,12 +279,28 @@ function AdminDashboard() {
                 {tab === "pages" && (
                   <PagesPanel api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />
                 )}
+                {tab === "news" && <ContentCollectionPanel kind="news" blockKey="site-news" api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />}
+                {tab === "testimonials" && <ContentCollectionPanel kind="testimonials" blockKey="home-testimonials" api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />}
+                {tab === "brands" && <ContentCollectionPanel kind="brands" blockKey="home-brands" api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />}
               </>
             )}
             </div>
           </div>
         )}
       </div>
+      <footer className="border-t border-border bg-card">
+        <div className="container-x py-5 text-center text-xs text-muted-foreground">
+          Developed by{" "}
+          <a
+            href="https://ksnirob.com"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-foreground transition hover:text-primary"
+          >
+            KS Nirob
+          </a>
+        </div>
+      </footer>
     </main>
   );
 }
@@ -577,7 +633,7 @@ function CategoriesPanel({
   }
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[380px_1fr]">
+    <section className="grid min-w-0 gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
       <form onSubmit={addCategory} className="rounded-lg border border-border bg-card p-5">
         <PanelTitle title="Category" action="Add category" />
         <div className="mt-5 grid gap-4">
@@ -591,7 +647,7 @@ function CategoriesPanel({
       <div className="grid gap-3">
         {categories.map((category) => (
           <article key={category._id} className="rounded-xl border border-border bg-card p-4">
-            <div className="grid gap-3 md:grid-cols-[1fr_1.6fr_auto_auto]">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[1fr_1.4fr_auto_auto]">
               <Field
                 label="Name"
                 value={category.name}
@@ -610,10 +666,10 @@ function CategoriesPanel({
               <button
                 type="button"
                 onClick={() => void deleteCategory(category)}
-                className="btn-outline self-end px-3 py-2.5 text-destructive hover:border-destructive"
+                className="grid h-10 w-10 place-items-center self-center rounded-full border border-border text-destructive hover:border-destructive"
                 aria-label={`Delete ${category.name}`}
               >
-                <Trash2 className="h-4 w-4" /> Delete
+                <Trash2 className="h-4 w-4" />
               </button>
             </div>
           </article>
@@ -647,7 +703,7 @@ function ContactPanel({
   }
 
   return (
-    <form onSubmit={saveContact} className="max-w-3xl rounded-lg border border-border bg-card p-5">
+    <form onSubmit={saveContact} className="max-w-2xl rounded-lg border border-border bg-card p-4 sm:p-5">
       <PanelTitle title="Contact information" action="Shown on contact/footer areas" />
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <Field label="Company" value={settings.companyName || ""} onChange={(value) => setSettings({ ...settings, companyName: value })} />
@@ -1010,6 +1066,295 @@ function PagesPanel({
   );
 }
 
+function ContentCollectionPanel({
+  kind,
+  blockKey,
+  api,
+  blocks,
+  reload,
+  setMessage,
+}: {
+  kind: "news" | "testimonials" | "brands";
+  blockKey: string;
+  api: <T>(path: string, options?: RequestInit) => Promise<T>;
+  blocks: ContentBlock[];
+  reload: () => Promise<void>;
+  setMessage: (message: string) => void;
+}) {
+  const source = blocks.find((block) => block.key === blockKey);
+  const [items, setItems] = useState<Record<string, string>[]>(
+    (source?.items || []) as Record<string, string>[],
+  );
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [expandedItem, setExpandedItem] = useState<number | null>(null);
+
+  useEffect(() => {
+    setItems((source?.items || []) as Record<string, string>[]);
+  }, [source]);
+
+  const labels = {
+    news: "News",
+    testimonials: "Testimonials",
+    brands: "Brand logos",
+  };
+
+  function addItem() {
+    const item =
+      kind === "news"
+        ? { title: "New article", slug: `article-${Date.now()}`, tag: "News", date: "", lead: "", body: "", image: "" }
+        : kind === "testimonials"
+          ? { name: "New client", role: "", initials: "", quote: "" }
+          : { name: "Brand", image: "" };
+    setExpandedItem(0);
+    setItems((current) => [item, ...current]);
+  }
+
+  function updateItem(index: number, patch: Record<string, string>) {
+    setItems((current) =>
+      current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)),
+    );
+  }
+
+  async function uploadItemImage(index: number, file: File) {
+    const body = new FormData();
+    body.append("image", file);
+    const result = await api<{ data: { url: string } }>("/api/uploads/image", {
+      method: "POST",
+      body,
+    });
+    updateItem(index, { image: result.data.url });
+    setMessage("Image uploaded. Save changes to publish it.");
+  }
+
+  async function uploadBrandLogos(files: File[]) {
+    const uploaded: Record<string, string>[] = [];
+    setMessage(`Uploading ${files.length} logo${files.length === 1 ? "" : "s"}...`);
+    for (const file of files) {
+      const body = new FormData();
+      body.append("image", file);
+      const result = await api<{ data: { url: string } }>("/api/uploads/image", {
+        method: "POST",
+        body,
+      });
+      uploaded.push({
+        name: file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " "),
+        image: result.data.url,
+      });
+    }
+    setItems((current) => [...current, ...uploaded]);
+    setMessage(`${uploaded.length} logo${uploaded.length === 1 ? "" : "s"} uploaded. Save changes to publish.`);
+  }
+
+  function moveItem(from: number, to: number) {
+    if (from === to) return;
+    setItems((current) => {
+      const next = [...current];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  }
+
+  async function saveItems() {
+    await api(`/api/content/${blockKey}`, {
+      method: "PUT",
+      body: JSON.stringify({ items, isActive: true }),
+    });
+    setMessage(`${labels[kind]} saved.`);
+    await reload();
+  }
+
+  return (
+    <section className="max-w-5xl rounded-xl border border-border bg-card p-4 sm:p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PanelTitle title={labels[kind]} />
+        {kind === "brands" ? (
+          <label className="btn-outline cursor-pointer">
+            <ImagePlus className="h-4 w-4" /> Add logos
+            <input
+              className="hidden"
+              type="file"
+              accept="image/*,.svg"
+              multiple
+              onChange={(event) => {
+                const files = Array.from(event.target.files || []);
+                if (files.length) void uploadBrandLogos(files);
+                event.target.value = "";
+              }}
+            />
+          </label>
+        ) : (
+          <button type="button" className="btn-outline" onClick={addItem}>
+            <Plus className="h-4 w-4" /> Add
+          </button>
+        )}
+      </div>
+      <div className="mt-5 grid gap-4">
+        {kind === "brands" && (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {items.map((item, index) => (
+              <div
+                key={`${item.image}-${index}`}
+                draggable
+                onDragStart={() => setDraggedIndex(index)}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={() => {
+                  if (draggedIndex !== null) moveItem(draggedIndex, index);
+                  setDraggedIndex(null);
+                }}
+                onDragEnd={() => setDraggedIndex(null)}
+                className={`group relative rounded-xl border bg-background p-3 transition ${
+                  draggedIndex === index ? "border-primary opacity-50" : "border-border"
+                }`}
+              >
+                <div className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-lg border border-border bg-white p-3">
+                  {item.image ? (
+                    <img
+                      src={adminAssetUrl(item.image)}
+                      alt="Brand logo"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  ) : (
+                    <span className="text-xs text-muted-foreground">No logo</span>
+                  )}
+                  <span className="absolute left-2 top-2 grid h-8 w-8 cursor-grab place-items-center rounded-full bg-white/95 text-muted-foreground shadow">
+                    <GripVertical className="h-4 w-4" />
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Delete logo"
+                    onClick={() =>
+                      setItems((current) =>
+                        current.filter((_, itemIndex) => itemIndex !== index),
+                      )
+                    }
+                    className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/95 text-destructive shadow"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {kind !== "brands" && (
+          <div className={kind === "news" || kind === "testimonials" ? "grid gap-4 md:grid-cols-2" : "grid gap-4"}>
+          {items.map((item, index) => {
+          if (kind === "news" && expandedItem !== null && expandedItem !== index) return null;
+          return (
+          <div key={index} className={`overflow-hidden rounded-xl border border-border bg-background ${(kind === "news" || kind === "testimonials") && expandedItem === index ? "md:col-span-2" : ""}`}>
+            {kind === "news" && (
+              <div className={`grid gap-4 p-4 ${expandedItem === index ? "sm:grid-cols-[180px_1fr]" : ""}`}>
+                {item.image && (
+                  <img
+                    src={adminAssetUrl(item.image)}
+                    alt=""
+                    className={`w-full rounded-lg border border-border object-cover ${expandedItem === index ? "aspect-[4/3]" : "aspect-[16/8]"}`}
+                  />
+                )}
+                <div className="flex min-w-0 flex-col">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                        {item.tag || "News"} · {item.date || "No date"}
+                      </p>
+                      <h3 className="mt-2 line-clamp-2 font-display text-xl text-primary">
+                        {item.title || "Untitled article"}
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedItem((current) => (current === index ? null : index))
+                      }
+                      className="btn-outline !w-auto self-start px-4 py-2"
+                    >
+                      {expandedItem === index ? "Close" : "Edit"}
+                    </button>
+                  </div>
+                  {expandedItem !== index && item.lead && (
+                    <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{item.lead}</p>
+                  )}
+                </div>
+              </div>
+            )}
+            {kind === "testimonials" && (
+              <div className="flex flex-col gap-4 p-4 sm:flex-row">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-primary/10 font-display text-sm text-primary">
+                  {item.initials || "—"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h3 className="font-semibold">{item.name || "Unnamed client"}</h3>
+                      <p className="text-xs text-muted-foreground">{item.role || "No role"}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedItem((current) => (current === index ? null : index))
+                      }
+                      className="btn-outline !w-auto self-start px-4 py-2"
+                    >
+                      {expandedItem === index ? "Close" : "Edit"}
+                    </button>
+                  </div>
+                  {expandedItem !== index && (
+                    <p className="mt-3 line-clamp-3 text-sm italic text-foreground/75">
+                      “{item.quote || "No testimonial text"}”
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+            <div className={`flex justify-end px-4 ${kind === "news" || kind === "testimonials" ? "pb-4" : "pt-4"}`}>
+              <button type="button" className="grid h-9 w-9 place-items-center rounded-full border border-border text-destructive" onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))}>
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+            {((kind !== "news" && kind !== "testimonials") || expandedItem === index) && <div className="grid gap-4 border-t border-border p-4 sm:grid-cols-2">
+              {kind === "news" && (
+                <>
+                  <Field label="Title" value={item.title || ""} onChange={(value) => updateItem(index, { title: value })} />
+                  <Field label="Slug" value={item.slug || ""} onChange={(value) => updateItem(index, { slug: value })} />
+                  <Field label="Category" value={item.tag || ""} onChange={(value) => updateItem(index, { tag: value })} />
+                  <Field label="Date" value={item.date || ""} onChange={(value) => updateItem(index, { date: value })} />
+                  <div className="sm:col-span-2"><TextArea label="Summary" value={item.lead || ""} onChange={(value) => updateItem(index, { lead: value })} /></div>
+                  <div className="sm:col-span-2"><TextArea label="Article body (separate paragraphs with a blank line)" value={item.body || ""} onChange={(value) => updateItem(index, { body: value })} /></div>
+                </>
+              )}
+              {kind === "testimonials" && (
+                <>
+                  <Field label="Name" value={item.name || ""} onChange={(value) => updateItem(index, { name: value })} />
+                  <Field label="Role / company" value={item.role || ""} onChange={(value) => updateItem(index, { role: value })} />
+                  <Field label="Initials" value={item.initials || ""} onChange={(value) => updateItem(index, { initials: value })} />
+                  <div className="sm:col-span-2"><TextArea label="Quote" value={item.quote || ""} onChange={(value) => updateItem(index, { quote: value })} /></div>
+                </>
+              )}
+              {kind !== "testimonials" && (
+                <div className={kind === "news" ? "sm:col-span-2" : ""}>
+                  <Field label="Image URL" value={item.image || ""} onChange={(value) => updateItem(index, { image: value })} />
+                  <label className="btn-outline mt-3 w-fit cursor-pointer">
+                    <ImagePlus className="h-4 w-4" /> Upload image
+                    <input className="hidden" type="file" accept="image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadItemImage(index, file); }} />
+                  </label>
+                  {item.image && <img src={adminAssetUrl(item.image)} alt="" className="mt-3 h-24 max-w-full rounded-lg border border-border object-contain" />}
+                </div>
+              )}
+            </div>}
+          </div>
+        );
+        })}
+          </div>
+        )}
+      </div>
+      <button type="button" className="btn-primary mt-5" onClick={saveItems}>
+        <Save className="h-4 w-4" /> Save changes
+      </button>
+    </section>
+  );
+}
+
 function MenuPanel({
   api,
   settings,
@@ -1045,7 +1390,7 @@ function MenuPanel({
             <Field label="Label" value={item.label} onChange={(value) => updateItem(index, { label: value })} />
             <Field label="Path" value={item.path} onChange={(value) => updateItem(index, { path: value })} placeholder="/about" />
             <Check label="Visible" checked={item.isActive !== false} onChange={(value) => updateItem(index, { isActive: value })} />
-            <button type="button" className="btn-outline self-end px-3 py-2.5" onClick={() => setSettings({ ...settings, menuItems: items.filter((_, itemIndex) => itemIndex !== index) })}><Trash2 className="h-4 w-4" /></button>
+            <button type="button" className="btn-outline self-center px-3 py-2.5" onClick={() => setSettings({ ...settings, menuItems: items.filter((_, itemIndex) => itemIndex !== index) })}><Trash2 className="h-4 w-4" /></button>
           </div>
         ))}
         <button type="button" className="btn-outline w-fit" onClick={() => setSettings({ ...settings, menuItems: [...items, { label: "New link", path: "/", isActive: true }] })}>
@@ -1092,7 +1437,7 @@ function SiteOptionsPanel({
   }
 
   return (
-    <form onSubmit={saveOptions} className="max-w-3xl rounded-xl border border-border bg-card p-5">
+    <form onSubmit={saveOptions} className="max-w-2xl rounded-xl border border-border bg-card p-4 sm:p-5">
       <PanelTitle title="Logo and branding" action="Used across header and footer" />
       <div className="mt-5 grid gap-4">
         <Field label="Company name" value={settings.companyName || ""} onChange={(value) => setSettings({ ...settings, companyName: value })} />
@@ -1128,11 +1473,11 @@ function SidebarButton({
   );
 }
 
-function PanelTitle({ title, action }: { title: string; action: string }) {
+function PanelTitle({ title, action }: { title: string; action?: string }) {
   return (
     <div>
-      <p className="eyebrow">{action}</p>
-      <h2 className="mt-1 text-xl font-semibold tracking-normal">{title}</h2>
+      {action && <p className="eyebrow">{action}</p>}
+      <h2 className={action ? "mt-1 text-xl font-semibold tracking-normal" : "text-xl font-semibold tracking-normal"}>{title}</h2>
     </div>
   );
 }

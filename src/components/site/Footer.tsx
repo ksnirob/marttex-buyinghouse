@@ -1,4 +1,5 @@
 import { Mail, MapPin, Phone, User } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { assetUrl, type SiteSettings } from "@/lib/site-api";
 
 const defaultExplore = [
@@ -12,7 +13,7 @@ const defaultExplore = [
 
 export function Footer({ settings }: { settings: SiteSettings }) {
   const company = settings.companyName || "Mart Tex";
-  const logo = assetUrl(settings.logoUrl);
+  const logo = assetUrl(settings.logoUrl || "/uploads/mart-tex-logo.svg");
   const links = (settings.menuItems?.length ? settings.menuItems : defaultExplore).filter(
     (item) => item.isActive !== false && item.path !== "/",
   );
@@ -41,7 +42,7 @@ export function Footer({ settings }: { settings: SiteSettings }) {
           <h4 className="text-sm font-medium">Explore</h4>
           <ul className="mt-4 space-y-2 text-sm text-primary-foreground/70">
             {links.map((item) => (
-              <li key={item.path}><a href={item.path} className="hover:text-primary-foreground">{item.label}</a></li>
+              <li key={item.path}><Link to={item.path as never} className="hover:text-primary-foreground">{item.label}</Link></li>
             ))}
           </ul>
         </div>
@@ -59,9 +60,19 @@ export function Footer({ settings }: { settings: SiteSettings }) {
         </div>
       </div>
       <div className="border-t border-primary-foreground/15">
-        <div className="container-x flex flex-col items-start justify-between gap-2 py-6 text-xs text-primary-foreground/60 sm:flex-row">
+        <div className="container-x flex flex-col items-start justify-between gap-2 py-6 text-sm text-primary-foreground/60 sm:flex-row">
           <p>© {new Date().getFullYear()} {company}. {settings.copyrightText || "All rights reserved."}</p>
-          <p>Built on threads. Driven by trust.</p>
+          <p>
+            Developed by{" "}
+            <a
+              href="https://ksnirob.com"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary-foreground/80 transition hover:text-primary-foreground"
+            >
+              KS Nirob
+            </a>
+          </p>
         </div>
       </div>
     </footer>

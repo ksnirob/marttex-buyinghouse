@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader, SiteLayout } from "@/components/site/Layout";
 import { ArrowUpRight } from "lucide-react";
 import { articles } from "./news.$slug";
+import { useEffect, useState } from "react";
+import { API_URL, assetUrl } from "@/lib/site-api";
 
 export const Route = createFileRoute("/news/")({
   component: News,
@@ -9,6 +11,25 @@ export const Route = createFileRoute("/news/")({
 });
 
 function News() {
+  const [newsItems, setNewsItems] = useState(articles);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/content/site-news`)
+      .then((response) => response.json())
+      .then((result) => {
+        if (Array.isArray(result.data?.items) && result.data.items.length) {
+          setNewsItems(
+            result.data.items.map((item: (typeof articles)[number]) => ({
+              ...item,
+              img: assetUrl((item as unknown as { image: string }).image),
+              body: typeof item.body === "string" ? item.body.split(/\n\s*\n/) : item.body,
+            })),
+          );
+        }
+      })
+      .catch(() => undefined);
+  }, []);
+
   return (
     <SiteLayout>
       <PageHeader
@@ -17,7 +38,7 @@ function News() {
         lead="Sourcing trends, factory updates and what's shifting in Bangladesh garment supply."
       />
       <section className="section-reveal container-x grid gap-8 py-24 md:grid-cols-2 lg:grid-cols-3">
-        {articles.map((p) => (
+        {newsItems.map((p) => (
           <article
             key={p.slug}
             className="group overflow-hidden rounded-2xl border border-border bg-card"

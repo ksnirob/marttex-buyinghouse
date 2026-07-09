@@ -14,6 +14,33 @@ const categories = [
 
 const contentBlocks = [
   {
+    key: "home-brands",
+    title: "Top Brands",
+    items: [
+      "tb-01.svg", "tb-02.svg", "tb-03.svg", "tb-04.svg", "tb-05.svg", "tb-06.svg",
+      "tb-07.svg", "tb-08.svg", "tb-09.svg", "tb-10.svg", "tb-12.svg", "tb-13.svg",
+    ].map((file, index) => ({ name: `Brand ${index + 1}`, image: `/uploads/${file}` })),
+  },
+  {
+    key: "home-testimonials",
+    title: "Testimonials",
+    items: [
+      { name: "Elena Marquez", role: "Head of Sourcing, Aurelia Studio", initials: "EM", quote: "Mart Tex runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons." },
+      { name: "Tomás Bernal", role: "Founder, Mont&Co", initials: "TB", quote: "From tech pack to FOB in record time. The QA photo reports alone are worth the partnership." },
+      { name: "Priya Anand", role: "Production Lead, Loomery", initials: "PA", quote: "Their factory matching is unreal. Every program lands with a mill that wants to make it well." },
+      { name: "Jonas Weber", role: "Buyer, Northwind Apparel", initials: "JW", quote: "Honest costing, no surprises at shipment. Mart Tex gets that exactly right." },
+    ],
+  },
+  {
+    key: "site-news",
+    title: "News",
+    items: [
+      { slug: "bangladesh-rmg-exports", image: "/uploads/factory.jpg", tag: "Industry", date: "April 2026", title: "Bangladesh RMG exports cross USD 50B — what it means for buyers", lead: "Bangladesh's ready-made garment sector has crossed a historic milestone, signalling a maturing supplier ecosystem and new opportunities.", body: "Bangladesh's export base continues to grow across knitwear, woven and value-added categories.\n\nFor buyers, long-term relationships with trusted local partners remain the best way to secure capacity, quality and reliable lead times." },
+      { slug: "cotton-recycled-blends", image: "/uploads/sourcing.jpg", tag: "Sourcing", date: "March 2026", title: "Cotton vs. recycled blends: a cost and quality comparison", lead: "A practical look at the cost, performance and sustainability tradeoffs for upcoming apparel programs.", body: "Recycled polyester is increasingly accessible while organic cotton still carries a meaningful premium.\n\nThe right fibre choice depends on product performance, target FOB and the sustainability story behind the collection." },
+      { slug: "qa-protocol", image: "/uploads/quality.jpg", tag: "Quality", date: "February 2026", title: "Inside our in-line QA protocol", lead: "Quality assurance at final inspection is too late. Our process intervenes throughout production.", body: "Pre-production, cutting-room and inline checks catch issues before they become expensive rework.\n\nThis approach keeps quality consistent and shipment schedules honest." },
+    ],
+  },
+  {
     key: "page-home",
     title: "Home",
     body: "Homepage slider and SEO settings.",
@@ -293,7 +320,8 @@ async function seed() {
     await prisma.contentBlock.upsert({
       where: { key: block.key },
       update:
-        (block.key === "page-home" || block.key === "page-gallery-header") &&
+        Array.isArray(block.items) &&
+        block.items.length > 0 &&
         existingBlock &&
         Array.isArray(existingBlock.items) &&
         existingBlock.items.length === 0

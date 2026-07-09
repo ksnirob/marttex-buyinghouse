@@ -41,6 +41,7 @@ import tb09 from "@/assets/brands/tb-09.svg";
 import tb10 from "@/assets/brands/tb-10.svg";
 import tb12 from "@/assets/brands/tb-12.svg";
 import tb13 from "@/assets/brands/tb-13.svg";
+import { API_URL, assetUrl } from "@/lib/site-api";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -70,7 +71,13 @@ const services = [
   { icon: Globe2, t: "Logistics", d: "Door-to-door shipping, customs and consolidation." },
 ];
 
-const brandLogos = [tb01, tb02, tb03, tb04, tb05, tb06, tb07, tb08, tb09, tb10, tb12, tb13];
+const defaultBrandLogos = [tb01, tb02, tb03, tb04, tb05, tb06, tb07, tb08, tb09, tb10, tb12, tb13];
+const defaultTestimonials = [
+  { name: "Elena Marquez", role: "Head of Sourcing, Aurelia Studio", initials: "EM", quote: "Mart Tex runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons." },
+  { name: "Tomás Bernal", role: "Founder, Mont&Co", initials: "TB", quote: "From tech pack to FOB in record time. The QA photo reports alone are worth the partnership." },
+  { name: "Priya Anand", role: "Production Lead, Loomery", initials: "PA", quote: "Their factory matching is unreal. Every program lands with a mill that wants to make it well." },
+  { name: "Jonas Weber", role: "Buyer, Northwind Apparel", initials: "JW", quote: "Honest costing, no surprises at shipment. Mart Tex gets that exactly right." },
+];
 
 const exportCountries = [
   { flag: "🇺🇸", name: "United States" },
@@ -93,6 +100,8 @@ const exportCountries = [
 
 function Index() {
   const [testimonialApi, setTestimonialApi] = useState<CarouselApi>();
+  const [brandLogos, setBrandLogos] = useState(defaultBrandLogos);
+  const [testimonials, setTestimonials] = useState(defaultTestimonials);
 
   useEffect(() => {
     if (!testimonialApi) return;
@@ -103,6 +112,23 @@ function Index() {
 
     return () => window.clearInterval(id);
   }, [testimonialApi]);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API_URL}/api/content/home-brands`).then((response) => response.json()),
+      fetch(`${API_URL}/api/content/home-testimonials`).then((response) => response.json()),
+    ])
+      .then(([brandsResult, testimonialsResult]) => {
+        const brands = Array.isArray(brandsResult.data?.items)
+          ? brandsResult.data.items.map((item: { image: string }) => assetUrl(item.image)).filter(Boolean)
+          : [];
+        if (brands.length) setBrandLogos(brands);
+        if (Array.isArray(testimonialsResult.data?.items) && testimonialsResult.data.items.length) {
+          setTestimonials(testimonialsResult.data.items);
+        }
+      })
+      .catch(() => undefined);
+  }, []);
 
   const countryRows = [
     { code: "us", name: "United States" },
@@ -489,50 +515,7 @@ function Index() {
             className="w-full"
           >
             <CarouselContent className="-ml-5">
-              {[
-                {
-                  name: "Elena Marquez",
-                  role: "Head of Sourcing, Aurelia Studio",
-                  initials: "EM",
-                  quote:
-                    "Mart Tex runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons.",
-                },
-                {
-                  name: "Tomás Bernal",
-                  role: "Founder, Mont&Co",
-                  initials: "TB",
-                  quote:
-                    "From tech pack to FOB in record time. The QA photo reports alone are worth the partnership — we never ship a season blind anymore.",
-                },
-                {
-                  name: "Priya Anand",
-                  role: "Production Lead, Loomery",
-                  initials: "PA",
-                  quote:
-                    "Their factory matching is unreal. Knit, denim, outerwear — every program lands with a mill that actually wants to make it well.",
-                },
-                {
-                  name: "Jonas Weber",
-                  role: "Buyer, Northwind Apparel",
-                  initials: "JW",
-                  quote:
-                    "Honest costing, no surprises at shipment. That's the part most buying houses fail at, and the part Mart Tex gets exactly right.",
-                },
-                {
-                  name: "Amara Okafor",
-                  role: "Design Director, Vesper",
-                  initials: "AO",
-                  quote:
-                    "They speak design as fluently as they speak production. Trims and fabric ideas come back as good as what we briefed.",
-                },
-                {
-                  name: "Liam Chen",
-                  role: "Operations, Kindred Goods",
-                  initials: "LC",
-                  quote:
-                    "Three seasons in and they feel like an extension of our team. Calm, accountable, and obsessed with the details.",
-                },
-              ].map((t) => (
+              {testimonials.map((t) => (
                 <CarouselItem key={t.name} className="pl-5 md:basis-1/2 lg:basis-1/3">
                   <figure className="flex h-full flex-col rounded-2xl border border-white/80 bg-white p-7 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <span className="font-display text-5xl leading-none text-primary/20">"</span>
