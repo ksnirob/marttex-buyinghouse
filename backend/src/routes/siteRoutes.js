@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getContentBlock,
+  getFavicon,
   getSiteSettings,
   listContentBlocks,
   updateSiteSettings,
@@ -14,6 +15,7 @@ export const siteRoutes = Router();
 
 siteRoutes.get("/site-settings", getSiteSettings);
 siteRoutes.patch("/site-settings", requireAuth, validate(settingsSchema), updateSiteSettings);
+siteRoutes.get("/favicon", getFavicon);
 siteRoutes.get("/content", listContentBlocks);
 siteRoutes.get("/content/:key", validate(keySchema), getContentBlock);
 siteRoutes.put("/content/:key", requireAuth, validate(contentSchema), upsertContentBlock);

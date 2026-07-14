@@ -27,15 +27,8 @@ export function Nav({ settings, categories }: { settings: SiteSettings; categori
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container-x flex h-20 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          {logo ? (
+          {logo && (
             <img src={logo} alt={company} className="h-11 w-auto max-w-44 object-contain" />
-          ) : (
-            <>
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-primary font-display text-lg text-primary-foreground">
-                {company.charAt(0)}
-              </span>
-              <span className="font-display text-lg tracking-tight text-primary">{company}</span>
-            </>
           )}
         </Link>
 

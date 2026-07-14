@@ -6,6 +6,27 @@ export const getSiteSettings = asyncHandler(async (_req, res) => {
   res.json({ success: true, data: settings });
 });
 
+function redirectToAsset(req, res, value) {
+  const asset = value?.trim();
+
+  if (!asset) {
+    res.status(204).end();
+    return;
+  }
+
+  const redirectUrl = /^https?:\/\//i.test(asset)
+    ? asset
+    : `${req.protocol}://${req.get("host")}${asset.startsWith("/") ? "" : "/"}${asset}`;
+
+  res.set("Cache-Control", "no-store");
+  res.redirect(302, redirectUrl);
+}
+
+export const getFavicon = asyncHandler(async (req, res) => {
+  const settings = await prisma.siteSetting.findFirst({ orderBy: { createdAt: "asc" } });
+  redirectToAsset(req, res, settings?.faviconUrl || "/uploads/mart-tex-logo.svg");
+});
+
 export const updateSiteSettings = asyncHandler(async (req, res) => {
   const existing = await prisma.siteSetting.findFirst({ orderBy: { createdAt: "asc" } });
   const defaults = { phones: [], menuItems: [], socials: {}, seo: {} };

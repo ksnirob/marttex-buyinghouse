@@ -11,6 +11,7 @@ import {
 import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
+import { API_URL } from "@/lib/site-api";
 
 function NotFoundComponent() {
   return (
@@ -62,6 +63,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: `${API_URL}/api/favicon` },
+      { rel: "shortcut icon", href: `${API_URL}/api/favicon` },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

@@ -165,7 +165,7 @@ export function HeroSlider() {
           </h1>
         </div>
 
-        <div className="container-x relative grid h-[350px] grid-cols-3 items-end gap-2 pt-16 sm:h-[78vh] sm:min-h-[560px] sm:max-h-[820px] sm:gap-6 sm:pt-0">
+        <div className="container-x relative grid h-[350px] grid-cols-3 items-end gap-2 pt-16 sm:h-[clamp(360px,58svh,680px)] sm:gap-6 sm:pt-0 xl:h-[clamp(460px,70svh,820px)]">
           {s.models.map((src, idx) => {
             const delay = idx * 120;
             const yOffset = 0;
@@ -188,7 +188,7 @@ export function HeroSlider() {
                   alt=""
                   width={768}
                   height={1536}
-                  className="relative z-10 h-[72%] w-auto max-w-full object-contain drop-shadow-[0_30px_40px_oklch(0.22_0.04_220/0.25)] sm:h-[94%]"
+                  className="relative z-10 h-[72%] w-auto max-w-full object-contain drop-shadow-[0_30px_40px_oklch(0.22_0.04_220/0.25)] sm:h-[86%] xl:h-[94%]"
                   style={{ transform: `translateY(${yOffset}px)` }}
                 />
               </figure>
