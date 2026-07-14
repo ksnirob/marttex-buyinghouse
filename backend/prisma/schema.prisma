@@ -79,6 +79,7 @@ model SiteSetting {
   workingHours  String   @default("") @db.VarChar(191)
   whatsapp      String   @default("") @db.VarChar(100)
   logoUrl       String   @default("") @db.Text
+  faviconUrl    String   @default("") @db.Text
   footerText    String   @default("") @db.Text
   copyrightText String   @default("") @db.VarChar(255)
   menuItems     Json?

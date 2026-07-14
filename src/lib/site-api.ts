@@ -17,6 +17,7 @@ export type SiteSettings = {
   workingHours?: string;
   whatsapp?: string;
   logoUrl?: string;
+  faviconUrl?: string;
   footerText?: string;
   copyrightText?: string;
   menuItems?: SiteMenuItem[];

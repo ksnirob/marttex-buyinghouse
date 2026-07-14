@@ -1,0 +1,2 @@
+ALTER TABLE `SiteSetting`
+  ADD COLUMN `faviconUrl` TEXT NOT NULL DEFAULT '';

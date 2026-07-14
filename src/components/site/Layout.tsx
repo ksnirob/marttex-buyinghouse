@@ -19,6 +19,19 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    const faviconUrl = assetUrl(settings.faviconUrl);
+    if (!faviconUrl) return;
+
+    let icon = document.head.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (!icon) {
+      icon = document.createElement("link");
+      icon.rel = "icon";
+      document.head.appendChild(icon);
+    }
+    icon.href = faviconUrl;
+  }, [settings.faviconUrl]);
+
+  useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>(".section-reveal"));
 
     if (!("IntersectionObserver" in window)) {

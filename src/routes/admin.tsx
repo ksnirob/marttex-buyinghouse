@@ -51,6 +51,7 @@ type SiteSettings = {
   workingHours?: string;
   whatsapp?: string;
   logoUrl?: string;
+  faviconUrl?: string;
   footerText?: string;
   copyrightText?: string;
   menuItems?: { label: string; path: string; isActive?: boolean }[];
@@ -1421,6 +1422,14 @@ function SiteOptionsPanel({
     setMessage("Logo uploaded. Save branding to publish it.");
   }
 
+  async function uploadFavicon(file: File) {
+    const body = new FormData();
+    body.append("image", file);
+    const result = await api<{ data: { url: string } }>("/api/uploads/image", { method: "POST", body });
+    setSettings({ ...settings, faviconUrl: result.data.url });
+    setMessage("Favicon uploaded. Save branding to publish it.");
+  }
+
   async function saveOptions(event: React.FormEvent) {
     event.preventDefault();
     const result = await api<{ data: SiteSettings }>("/api/site-settings", {
@@ -1428,6 +1437,7 @@ function SiteOptionsPanel({
       body: JSON.stringify({
         companyName: settings.companyName || "",
         logoUrl: settings.logoUrl || "",
+        faviconUrl: settings.faviconUrl || "",
         footerText: settings.footerText || "",
         copyrightText: settings.copyrightText || "",
       }),
@@ -1447,6 +1457,12 @@ function SiteOptionsPanel({
           <input className="hidden" type="file" accept="image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadLogo(file); }} />
         </label>
         {settings.logoUrl && <img src={settings.logoUrl.startsWith("http") ? settings.logoUrl : `${API_URL}${settings.logoUrl}`} alt="Logo preview" className="h-20 w-auto max-w-xs rounded-lg border border-border bg-background p-3 object-contain" />}
+        <Field label="Favicon URL" value={settings.faviconUrl || ""} onChange={(value) => setSettings({ ...settings, faviconUrl: value })} />
+        <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-background px-4 py-3 text-sm">
+          <ImagePlus className="h-4 w-4" /> Upload favicon
+          <input className="hidden" type="file" accept="image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFavicon(file); }} />
+        </label>
+        {settings.faviconUrl && <img src={settings.faviconUrl.startsWith("http") ? settings.faviconUrl : `${API_URL}${settings.faviconUrl}`} alt="Favicon preview" className="h-12 w-12 rounded-lg border border-border bg-background p-2 object-contain" />}
         <TextArea label="Footer description" value={settings.footerText || ""} onChange={(value) => setSettings({ ...settings, footerText: value })} />
         <Field label="Copyright text" value={settings.copyrightText || ""} onChange={(value) => setSettings({ ...settings, copyrightText: value })} />
         <button className="btn-primary w-fit" type="submit"><Save className="h-4 w-4" /> Save branding</button>

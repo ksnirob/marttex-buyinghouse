@@ -86,6 +86,7 @@ export const settingsSchema = z.object({
     workingHours: z.string().optional(),
     whatsapp: z.string().optional(),
     logoUrl: z.string().optional(),
+    faviconUrl: z.string().optional(),
     footerText: z.string().optional(),
     copyrightText: z.string().optional(),
     menuItems: z
