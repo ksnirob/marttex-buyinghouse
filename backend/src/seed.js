@@ -26,7 +26,7 @@ const contentBlocks = [
     title: "Testimonials",
     items: [
       { name: "Elena Marquez", role: "Head of Sourcing, Aurelia Studio", initials: "EM", quote: "Mart Tex runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons." },
-      { name: "Tomás Bernal", role: "Founder, Mont&Co", initials: "TB", quote: "From tech pack to FOB in record time. The QA photo reports alone are worth the partnership." },
+      { name: "Tomas Bernal", role: "Founder, Mont&Co", initials: "TB", quote: "From tech pack to FOB in record time. The QA photo reports alone are worth the partnership." },
       { name: "Priya Anand", role: "Production Lead, Loomery", initials: "PA", quote: "Their factory matching is unreal. Every program lands with a mill that wants to make it well." },
       { name: "Jonas Weber", role: "Buyer, Northwind Apparel", initials: "JW", quote: "Honest costing, no surprises at shipment. Mart Tex gets that exactly right." },
     ],

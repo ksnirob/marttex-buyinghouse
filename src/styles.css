@@ -88,7 +88,11 @@
   * {
     border-color: var(--color-border);
   }
-  html {
+  html,
+  :focus-within {
+    scroll-behavior: smooth;
+  }
+  * {
     scroll-behavior: smooth;
   }
   body {

@@ -29,21 +29,10 @@ import {
   CarouselNext,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import tb01 from "@/assets/brands/tb-01.svg";
-import tb02 from "@/assets/brands/tb-02.svg";
-import tb03 from "@/assets/brands/tb-03.svg";
-import tb04 from "@/assets/brands/tb-04.svg";
-import tb05 from "@/assets/brands/tb-05.svg";
-import tb06 from "@/assets/brands/tb-06.svg";
-import tb07 from "@/assets/brands/tb-07.svg";
-import tb08 from "@/assets/brands/tb-08.svg";
-import tb09 from "@/assets/brands/tb-09.svg";
-import tb10 from "@/assets/brands/tb-10.svg";
-import tb12 from "@/assets/brands/tb-12.svg";
-import tb13 from "@/assets/brands/tb-13.svg";
 import { API_URL, assetUrl } from "@/lib/site-api";
 
 export const Route = createFileRoute("/")({
+  loader: loadHomeContent,
   component: Index,
   head: () => ({
     meta: [{ title: "Mart Tex — Built on Threads, Driven by Trust" }],
@@ -71,13 +60,37 @@ const services = [
   { icon: Globe2, t: "Logistics", d: "Door-to-door shipping, customs and consolidation." },
 ];
 
-const defaultBrandLogos = [tb01, tb02, tb03, tb04, tb05, tb06, tb07, tb08, tb09, tb10, tb12, tb13];
-const defaultTestimonials = [
-  { name: "Elena Marquez", role: "Head of Sourcing, Aurelia Studio", initials: "EM", quote: "Mart Tex runs our Dhaka supply like it's their own brand. Sample turnaround dropped to nine days and our defect rate is the lowest in five seasons." },
-  { name: "Tomás Bernal", role: "Founder, Mont&Co", initials: "TB", quote: "From tech pack to FOB in record time. The QA photo reports alone are worth the partnership." },
-  { name: "Priya Anand", role: "Production Lead, Loomery", initials: "PA", quote: "Their factory matching is unreal. Every program lands with a mill that wants to make it well." },
-  { name: "Jonas Weber", role: "Buyer, Northwind Apparel", initials: "JW", quote: "Honest costing, no surprises at shipment. Mart Tex gets that exactly right." },
-];
+type Testimonial = {
+  name: string;
+  role: string;
+  initials: string;
+  quote: string;
+};
+
+async function loadHomeContent() {
+  try {
+    const [brandsResponse, testimonialsResponse] = await Promise.all([
+      fetch(`${API_URL}/api/content/home-brands`),
+      fetch(`${API_URL}/api/content/home-testimonials`),
+    ]);
+    const [brandsResult, testimonialsResult] = await Promise.all([
+      brandsResponse.json(),
+      testimonialsResponse.json(),
+    ]);
+    const brandLogos = Array.isArray(brandsResult.data?.items)
+      ? brandsResult.data.items
+          .map((item: { image?: string }) => assetUrl(item.image))
+          .filter(Boolean)
+      : [];
+    const testimonials = Array.isArray(testimonialsResult.data?.items)
+      ? (testimonialsResult.data.items as Testimonial[])
+      : [];
+
+    return { brandLogos, testimonials };
+  } catch {
+    return { brandLogos: [], testimonials: [] };
+  }
+}
 
 const exportCountries = [
   { flag: "🇺🇸", name: "United States" },
@@ -99,9 +112,10 @@ const exportCountries = [
 ];
 
 function Index() {
+  const homeContent = Route.useLoaderData();
   const [testimonialApi, setTestimonialApi] = useState<CarouselApi>();
-  const [brandLogos, setBrandLogos] = useState(defaultBrandLogos);
-  const [testimonials, setTestimonials] = useState(defaultTestimonials);
+  const brandLogos = homeContent.brandLogos;
+  const testimonials = homeContent.testimonials;
 
   useEffect(() => {
     if (!testimonialApi) return;
@@ -112,23 +126,6 @@ function Index() {
 
     return () => window.clearInterval(id);
   }, [testimonialApi]);
-
-  useEffect(() => {
-    Promise.all([
-      fetch(`${API_URL}/api/content/home-brands`).then((response) => response.json()),
-      fetch(`${API_URL}/api/content/home-testimonials`).then((response) => response.json()),
-    ])
-      .then(([brandsResult, testimonialsResult]) => {
-        const brands = Array.isArray(brandsResult.data?.items)
-          ? brandsResult.data.items.map((item: { image: string }) => assetUrl(item.image)).filter(Boolean)
-          : [];
-        if (brands.length) setBrandLogos(brands);
-        if (Array.isArray(testimonialsResult.data?.items) && testimonialsResult.data.items.length) {
-          setTestimonials(testimonialsResult.data.items);
-        }
-      })
-      .catch(() => undefined);
-  }, []);
 
   const countryRows = [
     { code: "us", name: "United States" },
@@ -409,6 +406,7 @@ function Index() {
       </section>
 
       {/* TOP BRANDS */}
+      {brandLogos.length > 0 && (
       <section className="section-reveal overflow-hidden border-y border-border bg-[linear-gradient(180deg,white_0%,oklch(0.97_0.006_205)_100%)] py-12 md:py-16">
         <div className="container-x">
           <div className="text-center">
@@ -439,6 +437,7 @@ function Index() {
           </div>
         </div>
       </section>
+      )}
 
       {/* LET'S WORK TOGETHER */}
       <section className="section-reveal bg-[oklch(0.975_0.006_205)] py-24 md:py-32">
@@ -496,6 +495,7 @@ function Index() {
       </section>
 
       {/* TESTIMONIALS */}
+      {testimonials.length > 0 && (
       <section className="section-reveal relative overflow-hidden bg-[oklch(0.965_0.011_205)] py-24 md:py-32">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,oklch(0.61_0.14_150/0.12),transparent_58%)]" />
 
@@ -549,6 +549,7 @@ function Index() {
           </Carousel>
         </div>
       </section>
+      )}
 
       {/* NEWS / INSIGHTS — editorial */}
       <section className="section-reveal relative overflow-hidden bg-white py-24 md:py-32">
