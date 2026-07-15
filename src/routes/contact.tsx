@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, SiteLayout } from "@/components/site/Layout";
 import { Mail, MapPin, Phone, User } from "lucide-react";
+import type { FormEvent } from "react";
 import { useState } from "react";
+import { API_URL } from "@/lib/site-api";
 
 export const Route = createFileRoute("/contact")({
   component: Contact,
@@ -15,6 +17,45 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSending(true);
+    setError("");
+
+    const form = new FormData(event.currentTarget);
+    const payload = {
+      name: String(form.get("name") || ""),
+      company: String(form.get("company") || ""),
+      email: String(form.get("email") || ""),
+      phone: String(form.get("phone") || ""),
+      category: String(form.get("category") || ""),
+      quantity: String(form.get("qty") || ""),
+      message: String(form.get("message") || ""),
+    };
+
+    try {
+      const response = await fetch(`${API_URL}/api/enquiries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.message || "Could not send your enquiry.");
+      }
+
+      setSent(true);
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "Could not send your enquiry.");
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <SiteLayout>
       <PageHeader
@@ -24,10 +65,7 @@ function Contact() {
       />
       <section className="section-reveal container-x grid gap-12 py-24 lg:grid-cols-[1.2fr_1fr]">
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSent(true);
-          }}
+          onSubmit={handleSubmit}
           className="rounded-3xl border border-border bg-card p-8 md:p-10"
         >
           {sent ? (
@@ -61,9 +99,10 @@ function Contact() {
                   placeholder="Tell us about your product, target FOB and timeline."
                 />
               </div>
-              <button className="btn-primary mt-2 w-fit" type="submit">
-                Send enquiry
+              <button className="btn-primary mt-2 w-fit" type="submit" disabled={sending}>
+                {sending ? "Sending..." : "Send enquiry"}
               </button>
+              {error && <p className="text-sm text-destructive">{error}</p>}
             </div>
           )}
         </form>

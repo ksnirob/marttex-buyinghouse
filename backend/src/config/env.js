@@ -1,6 +1,12 @@
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const backendRoot = path.resolve(__dirname, "../..");
+
+dotenv.config({ path: path.join(backendRoot, ".env") });
 
 const required = ["DATABASE_URL", "JWT_SECRET"];
 
@@ -21,4 +27,12 @@ export const env = {
   adminEmail: process.env.ADMIN_EMAIL || "admin@example.com",
   adminPassword: process.env.ADMIN_PASSWORD || "change-me-now",
   maxUploadMb: Number(process.env.MAX_UPLOAD_MB || 5),
+  smtpHost: process.env.SMTP_HOST || "mail.marttex.net",
+  smtpPort: Number(process.env.SMTP_PORT || 465),
+  smtpSecure: String(process.env.SMTP_SECURE || "true") === "true",
+  smtpUser: process.env.SMTP_USER || "info@marttex.net",
+  smtpPass: process.env.SMTP_PASS || "",
+  mailFrom: process.env.MAIL_FROM || "info@marttex.net",
+  mailTo: process.env.MAIL_TO || "info@marttex.net",
+  smtpTimeoutMs: Number(process.env.SMTP_TIMEOUT_MS || 10000),
 };
