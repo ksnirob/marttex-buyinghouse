@@ -20,7 +20,7 @@ export function Nav({ settings, categories }: { settings: SiteSettings; categori
   const menu = (settings.menuItems?.length ? settings.menuItems : defaultMenu).filter(
     (item) => item.isActive !== false,
   );
-  const logo = assetUrl(settings.logoUrl || "");
+  const logo = assetUrl(settings.logoUrl || "/uploads/logo.png");
   const company = settings.companyName || "Mart Tex";
 
   return (

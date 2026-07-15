@@ -13,7 +13,7 @@ const defaultExplore = [
 
 export function Footer({ settings }: { settings: SiteSettings }) {
   const company = settings.companyName || "Mart Tex";
-  const logo = assetUrl(settings.logoUrl || "/uploads/mart-tex-logo.svg");
+  const logo = assetUrl(settings.logoUrl || "/uploads/logo.png");
   const links = (settings.menuItems?.length ? settings.menuItems : defaultExplore).filter(
     (item) => item.isActive !== false && item.path !== "/",
   );
