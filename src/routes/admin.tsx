@@ -9,7 +9,9 @@ export const Route = createFileRoute("/admin")({
   }),
 });
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:4000";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://127.0.0.1:4000";
 const tokenKey = "martxbd_admin_token";
 
 function adminAssetUrl(value?: string) {
@@ -105,7 +107,12 @@ function AdminDashboard() {
     if (!(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
     if (token) headers.set("Authorization", `Bearer ${token}`);
 
-    const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+    let response: Response;
+    try {
+      response = await fetch(`${API_URL}${path}`, { ...options, headers });
+    } catch {
+      throw new Error(`Could not connect to API server: ${API_URL}`);
+    }
     const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
@@ -332,7 +339,7 @@ function LoginPanel({ onToken }: { onToken: (token: string) => void }) {
 
       onToken(result.token);
     } catch {
-      setMessage("Could not reach the backend. Make sure http://127.0.0.1:4000 is running.");
+      setMessage(`Could not reach the backend. Make sure ${API_URL} is running.`);
     } finally {
       setLoading(false);
     }

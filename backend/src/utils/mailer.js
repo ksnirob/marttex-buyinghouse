@@ -1,10 +1,10 @@
-import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
 
 let transporter;
 
-function getTransporter() {
+async function getTransporter() {
   if (!transporter) {
+    const { default: nodemailer } = await import("nodemailer");
     transporter = nodemailer.createTransport({
       host: env.smtpHost,
       port: env.smtpPort,
@@ -69,7 +69,7 @@ export async function sendEnquiryEmail(enquiry) {
   `;
 
   await Promise.race([
-    getTransporter().sendMail({
+    (await getTransporter()).sendMail({
       from: env.mailFrom,
       to: env.mailTo,
       replyTo: enquiry.email,
