@@ -1423,11 +1423,20 @@ function SiteOptionsPanel({
   }
 
   async function uploadFavicon(file: File) {
-    const body = new FormData();
-    body.append("image", file);
-    const result = await api<{ data: { url: string } }>("/api/uploads/image", { method: "POST", body });
-    setSettings({ ...settings, faviconUrl: result.data.url });
-    setMessage("Favicon uploaded. Save branding to publish it.");
+    try {
+      setMessage("Uploading favicon...");
+      const body = new FormData();
+      body.append("image", file);
+      const result = await api<{ data: { url: string } }>("/api/uploads/image", { method: "POST", body });
+      const saved = await api<{ data: SiteSettings }>("/api/site-settings", {
+        method: "PATCH",
+        body: JSON.stringify({ faviconUrl: result.data.url }),
+      });
+      setSettings(saved.data);
+      setMessage("Favicon uploaded and published.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Favicon upload failed.");
+    }
   }
 
   async function saveOptions(event: React.FormEvent) {
@@ -1460,7 +1469,7 @@ function SiteOptionsPanel({
         <Field label="Favicon URL" value={settings.faviconUrl || ""} onChange={(value) => setSettings({ ...settings, faviconUrl: value })} />
         <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-background px-4 py-3 text-sm">
           <ImagePlus className="h-4 w-4" /> Upload favicon
-          <input className="hidden" type="file" accept="image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFavicon(file); }} />
+          <input className="hidden" type="file" accept=".ico,.png,.svg,.jpg,.jpeg,.webp,image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFavicon(file); }} />
         </label>
         {settings.faviconUrl && <img src={settings.faviconUrl.startsWith("http") ? settings.faviconUrl : `${API_URL}${settings.faviconUrl}`} alt="Favicon preview" className="h-12 w-12 rounded-lg border border-border bg-background p-2 object-contain" />}
         <TextArea label="Footer description" value={settings.footerText || ""} onChange={(value) => setSettings({ ...settings, footerText: value })} />

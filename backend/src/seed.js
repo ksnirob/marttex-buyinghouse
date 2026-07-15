@@ -270,7 +270,7 @@ async function seed() {
       data: {
         companyName: "Mart Tex",
         logoUrl: "/uploads/mart-tex-logo.svg",
-        faviconUrl: "/uploads/mart-tex-logo.svg",
+        faviconUrl: "",
         email: "info@marttex.net",
         phones: ["+8801905450850", "+8801681624965"],
         address: "Nikunja-02, Road-09, House-07, Khilkhet, Dhaka-1229, Bangladesh",
@@ -298,7 +298,6 @@ async function seed() {
       where: { id: settings.id },
       data: {
         whatsapp: settings.whatsapp || "+8801905450850",
-        faviconUrl: settings.faviconUrl || "/uploads/mart-tex-logo.svg",
         footerText:
           settings.footerText ||
           "A Bangladesh-based buying house connecting global fashion brands with vetted, ethical garment manufacturers — from sample to shipment.",

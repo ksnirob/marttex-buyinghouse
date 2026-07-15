@@ -1,9 +1,47 @@
 import { prisma } from "../lib/prisma.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
+let faviconColumnReady = false;
+
+async function ensureFaviconColumn() {
+  if (faviconColumnReady) return;
+
+  try {
+    await prisma.$queryRaw`SELECT faviconUrl FROM SiteSetting LIMIT 1`;
+    faviconColumnReady = true;
+    return;
+  } catch (error) {
+    if (error?.code !== "P2010" && !String(error?.message || "").includes("1054")) {
+      throw error;
+    }
+  }
+
+  await prisma.$executeRawUnsafe("ALTER TABLE `SiteSetting` ADD COLUMN `faviconUrl` TEXT NOT NULL DEFAULT ''");
+  faviconColumnReady = true;
+}
+
+async function readFaviconUrl(settings) {
+  if (!settings?.id) return settings || null;
+
+  try {
+    await ensureFaviconColumn();
+    const rows = await prisma.$queryRaw`SELECT faviconUrl FROM SiteSetting WHERE id = ${settings.id} LIMIT 1`;
+    return { ...settings, faviconUrl: rows?.[0]?.faviconUrl || "" };
+  } catch {
+    return { ...settings, faviconUrl: "" };
+  }
+}
+
+async function writeFaviconUrl(settingsId, faviconUrl) {
+  if (!settingsId || typeof faviconUrl !== "string") return;
+
+  await ensureFaviconColumn();
+  await prisma.$executeRaw`UPDATE SiteSetting SET faviconUrl = ${faviconUrl} WHERE id = ${settingsId}`;
+}
+
 export const getSiteSettings = asyncHandler(async (_req, res) => {
   const settings = await prisma.siteSetting.findFirst({ orderBy: { createdAt: "asc" } });
-  res.json({ success: true, data: settings });
+  res.json({ success: true, data: await readFaviconUrl(settings) });
 });
 
 function redirectToAsset(req, res, value) {
@@ -24,22 +62,26 @@ function redirectToAsset(req, res, value) {
 
 export const getFavicon = asyncHandler(async (req, res) => {
   const settings = await prisma.siteSetting.findFirst({ orderBy: { createdAt: "asc" } });
-  redirectToAsset(req, res, settings?.faviconUrl || "/uploads/mart-tex-logo.svg");
+  const settingsWithFavicon = await readFaviconUrl(settings);
+  redirectToAsset(req, res, settingsWithFavicon?.faviconUrl || "");
 });
 
 export const updateSiteSettings = asyncHandler(async (req, res) => {
   const existing = await prisma.siteSetting.findFirst({ orderBy: { createdAt: "asc" } });
   const defaults = { phones: [], menuItems: [], socials: {}, seo: {} };
+  const { faviconUrl, ...siteSettingsData } = req.validated.body;
   const settings = existing
     ? await prisma.siteSetting.update({
         where: { id: existing.id },
-        data: req.validated.body,
+        data: siteSettingsData,
       })
     : await prisma.siteSetting.create({
-        data: { ...defaults, ...req.validated.body },
+        data: { ...defaults, ...siteSettingsData },
       });
 
-  res.json({ success: true, data: settings });
+  await writeFaviconUrl(settings.id, faviconUrl);
+
+  res.json({ success: true, data: await readFaviconUrl(settings) });
 });
 
 export const listContentBlocks = asyncHandler(async (req, res) => {

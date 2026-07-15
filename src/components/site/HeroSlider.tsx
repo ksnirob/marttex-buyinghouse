@@ -44,6 +44,107 @@ const scenes: Scene[] = [
 ];
 
 const HOLD = 4200;
+const MODEL_SLOT_COUNT = 3;
+const MODEL_TARGET_VISIBLE_HEIGHT = 1.08;
+
+type ModelFit = {
+  scale: number;
+  y: number;
+};
+
+const defaultModelFit: ModelFit = { scale: 0.9, y: 0 };
+const modelFitCache = new Map<string, ModelFit>();
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getModelSlots(models: string[]) {
+  const visibleModels = models.filter(Boolean).slice(0, MODEL_SLOT_COUNT);
+  if (visibleModels.length === 1) return ["", visibleModels[0], ""];
+  if (visibleModels.length === 2) return [visibleModels[0], "", visibleModels[1]];
+  return Array.from({ length: MODEL_SLOT_COUNT }, (_, idx) => visibleModels[idx] || "");
+}
+
+function HeroModelImage({ src }: { src: string }) {
+  const [fit, setFit] = useState<ModelFit>(() => modelFitCache.get(src) || defaultModelFit);
+
+  useEffect(() => {
+    if (!src) return;
+
+    const cached = modelFitCache.get(src);
+    if (cached) {
+      setFit(cached);
+      return;
+    }
+
+    let cancelled = false;
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.onload = () => {
+      try {
+        const sampleWidth = 180;
+        const ratio = sampleWidth / image.naturalWidth;
+        const sampleHeight = Math.max(1, Math.round(image.naturalHeight * ratio));
+        const canvas = document.createElement("canvas");
+        canvas.width = sampleWidth;
+        canvas.height = sampleHeight;
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        if (!context) return;
+
+        context.drawImage(image, 0, 0, sampleWidth, sampleHeight);
+        const data = context.getImageData(0, 0, sampleWidth, sampleHeight).data;
+        let minY = sampleHeight;
+        let maxY = -1;
+
+        for (let y = 0; y < sampleHeight; y += 1) {
+          for (let x = 0; x < sampleWidth; x += 1) {
+            if (data[(y * sampleWidth + x) * 4 + 3] > 10) {
+              if (y < minY) minY = y;
+              if (y > maxY) maxY = y;
+            }
+          }
+        }
+
+        if (maxY < minY) return;
+
+        const visibleRatio = (maxY - minY + 1) / sampleHeight;
+        const bottomPadRatio = (sampleHeight - maxY - 1) / sampleHeight;
+        const nextFit = {
+          scale: clamp(MODEL_TARGET_VISIBLE_HEIGHT / visibleRatio, 1, 1.3),
+          y: bottomPadRatio * 100,
+        };
+
+        modelFitCache.set(src, nextFit);
+        if (!cancelled) setFit(nextFit);
+      } catch {
+        if (!cancelled) setFit(defaultModelFit);
+      }
+    };
+    image.onerror = () => {
+      if (!cancelled) setFit(defaultModelFit);
+    };
+    image.src = src;
+
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  return (
+    <img
+      src={src}
+      alt=""
+      width={768}
+      height={1536}
+      className="relative z-10 h-full w-auto max-w-full object-contain drop-shadow-[0_30px_40px_oklch(0.22_0.04_220/0.25)]"
+      style={{
+        transform: `translateY(${fit.y}%) scale(${fit.scale})`,
+        transformOrigin: "bottom center",
+      }}
+    />
+  );
+}
 
 export function HeroSlider() {
   const [i, setI] = useState(0);
@@ -110,6 +211,7 @@ export function HeroSlider() {
   }, []);
 
   const s = activeScenes[i] || activeScenes[0];
+  const modelSlots = getModelSlots(s.models);
 
   return (
     <div className="relative isolate overflow-hidden bg-[oklch(0.975_0.006_205)]">
@@ -138,8 +240,8 @@ export function HeroSlider() {
         <span>{s.eyebrow}</span>
       </div>
 
-      <div className="relative">
-        <div className="pointer-events-none absolute inset-x-0 top-5 z-0 flex justify-center sm:inset-0 sm:top-0 sm:items-center sm:pb-0">
+      <div className="relative pt-3 sm:pt-12 xl:pt-14">
+        <div className="pointer-events-none absolute inset-x-0 top-5 z-0 flex justify-center sm:inset-x-0 sm:top-12 sm:bottom-0 sm:items-center sm:pb-0 xl:top-14">
           <h1
             key={`w-${i}`}
             className="select-none whitespace-nowrap font-display font-bold leading-none text-primary text-[clamp(4.7rem,24vw,22rem)] sm:text-[clamp(6rem,22vw,22rem)]"
@@ -165,14 +267,13 @@ export function HeroSlider() {
           </h1>
         </div>
 
-        <div className="container-x relative grid h-[350px] grid-cols-3 items-end gap-2 pt-16 sm:h-[clamp(360px,58svh,680px)] sm:gap-6 sm:pt-0 xl:h-[clamp(460px,70svh,820px)]">
-          {s.models.map((src, idx) => {
+        <div className="container-x relative mt-7 grid h-[300px] grid-cols-3 items-end gap-2 pt-24 sm:mt-0 sm:h-[clamp(380px,64svh,690px)] sm:gap-6 sm:pt-0">
+          {modelSlots.map((src, idx) => {
             const delay = idx * 120;
-            const yOffset = 0;
             return (
               <figure
-                key={`${i}-${idx}`}
-                className="relative flex h-full items-end justify-center"
+                key={`${i}-${idx}-${src || "empty"}`}
+                className="relative flex h-[210px] items-end justify-center sm:h-[clamp(330px,60svh,650px)]"
                 style={{
                   animation: transitioning
                     ? `model-out 0.55s ease-out ${delay}ms forwards`
@@ -183,20 +284,13 @@ export function HeroSlider() {
                   aria-hidden
                   className="absolute bottom-[6%] left-1/2 h-4 w-3/4 -translate-x-1/2 rounded-full bg-primary/25 blur-2xl"
                 />
-                <img
-                  src={src}
-                  alt=""
-                  width={768}
-                  height={1536}
-                  className="relative z-10 h-[72%] w-auto max-w-full object-contain drop-shadow-[0_30px_40px_oklch(0.22_0.04_220/0.25)] sm:h-[86%] xl:h-[94%]"
-                  style={{ transform: `translateY(${yOffset}px)` }}
-                />
+                {src && <HeroModelImage src={src} />}
               </figure>
             );
           })}
         </div>
 
-        <div className="pointer-events-none relative z-20 flex justify-center px-6 pb-8 sm:mt-0 sm:px-6 sm:pb-8">
+        <div className="pointer-events-none relative z-20 mt-5 flex justify-center px-6 pb-3 sm:mt-6 sm:px-6 sm:pb-4">
           <p
             key={`d-${i}`}
             className="pointer-events-auto max-w-md text-center text-sm leading-relaxed text-primary/75 sm:text-base"
@@ -209,7 +303,7 @@ export function HeroSlider() {
         </div>
       </div>
 
-      <div className="container-x grid items-center gap-4 border-t border-primary/10 py-5 sm:mt-4 md:grid-cols-[1fr_auto_1fr]">
+      <div className="container-x grid items-center gap-4 border-t border-primary/10 py-4 sm:mt-0 md:grid-cols-[1fr_auto_1fr]">
         <div className="flex items-center gap-2 justify-self-center md:justify-self-start">
           <button
             onClick={() => go(i - 1)}

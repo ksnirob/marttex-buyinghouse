@@ -21,14 +21,21 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     const faviconUrl = assetUrl(settings.faviconUrl);
     if (!faviconUrl) return;
+    const versionedUrl = `${faviconUrl}${faviconUrl.includes("?") ? "&" : "?"}v=${encodeURIComponent(settings.faviconUrl || "")}`;
 
-    let icon = document.head.querySelector<HTMLLinkElement>('link[rel="icon"]');
-    if (!icon) {
-      icon = document.createElement("link");
-      icon.rel = "icon";
-      document.head.appendChild(icon);
+    const setIcon = (rel: string) => {
+      let icon = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+      if (!icon) {
+        icon = document.createElement("link");
+        icon.rel = rel;
+        document.head.appendChild(icon);
+      }
+      icon.href = versionedUrl;
     }
-    icon.href = faviconUrl;
+
+    setIcon("icon");
+    setIcon("shortcut icon");
+    setIcon("apple-touch-icon");
   }, [settings.faviconUrl]);
 
   useEffect(() => {
