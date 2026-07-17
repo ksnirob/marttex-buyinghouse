@@ -124,7 +124,8 @@ function AdminDashboard() {
     const method = (options.method || "GET").toUpperCase();
     const hasBody = options.body != null;
     if (hasBody && !(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
-    if (token && method !== "GET") headers.set("Authorization", `Bearer ${token}`);
+    const requestToken = window.localStorage.getItem(tokenKey) || token;
+    if (requestToken && method !== "GET") headers.set("Authorization", `Bearer ${requestToken}`);
 
     let response: Response;
     try {

@@ -12,21 +12,22 @@ export const requireAuth = asyncHandler(async (req, _res, next) => {
     throw new ApiError(401, "Authentication token is required.");
   }
 
+  let payload;
   try {
-    const payload = jwt.verify(token, env.jwtSecret);
-    const user = await prisma.adminUser.findUnique({
-      where: { id: payload.sub },
-      omit: { passwordHash: true },
-    });
-
-    if (!user) {
-      throw new ApiError(401, "Admin account no longer exists.");
-    }
-
-    req.user = user;
-    next();
-  } catch (error) {
-    if (error instanceof ApiError) throw error;
+    payload = jwt.verify(token, env.jwtSecret);
+  } catch {
     throw new ApiError(401, "Invalid or expired token.");
   }
+
+  const user = await prisma.adminUser.findUnique({
+    where: { id: payload.sub },
+    select: { id: true, name: true, email: true, role: true, createdAt: true, updatedAt: true },
+  });
+
+  if (!user) {
+    throw new ApiError(401, "Admin account no longer exists.");
+  }
+
+  req.user = user;
+  next();
 });
