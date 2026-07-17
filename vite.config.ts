@@ -13,14 +13,14 @@ export default defineConfig({
     server: {
       proxy: {
         "/api": {
-          target: "https://api.marttex.net",
+          target: "http://localhost:4000",
           changeOrigin: true,
-          secure: true,
+          secure: false,
         },
         "/uploads": {
-          target: "https://api.marttex.net",
+          target: "http://localhost:4000",
           changeOrigin: true,
-          secure: true,
+          secure: false,
         },
       },
     },
