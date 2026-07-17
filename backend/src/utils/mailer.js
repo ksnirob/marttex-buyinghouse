@@ -75,7 +75,18 @@ export async function sendEnquiryEmail(enquiry) {
     return { sent: false, reason: "Email credentials are not configured." };
   }
 
-  const subject = `New Mart Tex enquiry from ${enquiry.name}`;
+  const submittedAt = enquiry.createdAt
+    ? new Date(enquiry.createdAt).toLocaleString("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Asia/Dhaka",
+      })
+    : new Date().toLocaleString("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Asia/Dhaka",
+      });
+  const subject = `New Mart Tex enquiry from ${enquiry.name} - ${submittedAt}`;
   const rows = [
     ["Name", enquiry.name],
     ["Company", enquiry.company],
