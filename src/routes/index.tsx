@@ -31,11 +31,35 @@ import {
 } from "@/components/ui/carousel";
 import { API_URL, assetUrl } from "@/lib/site-api";
 
+const homeUrl = "https://marttex.net/";
+const homeTitle = "Mart Tex - Built on Threads, Driven by Trust";
+const homeDescription =
+  "Bangladesh garment buying house for sourcing, production management, quality assurance and export support.";
+const homeImage =
+  "https://marttex.net/thumbnail.png";
+
 export const Route = createFileRoute("/")({
   loader: loadHomeContent,
   component: Index,
   head: () => ({
-    meta: [{ title: "Mart Tex — Built on Threads, Driven by Trust" }],
+    meta: [
+      { title: homeTitle },
+      { name: "description", content: homeDescription },
+      { property: "og:title", content: homeTitle },
+      { property: "og:description", content: homeDescription },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: homeUrl },
+      { property: "og:site_name", content: "Mart Tex" },
+      { property: "og:image", content: homeImage },
+      { property: "og:image:secure_url", content: homeImage },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: homeTitle },
+      { name: "twitter:description", content: homeDescription },
+      { name: "twitter:image", content: homeImage },
+    ],
+    links: [{ rel: "canonical", href: homeUrl }],
   }),
 });
 

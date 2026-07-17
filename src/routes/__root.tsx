@@ -13,6 +13,13 @@ import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { API_URL } from "@/lib/site-api";
 
+const siteUrl = "https://marttex.net/";
+const siteTitle = "Mart Tex - Bangladesh Garment Buying House";
+const siteDescription =
+  "Mart Tex is a trusted Bangladesh buying house for ethical sourcing, production and quality assurance for global fashion brands.";
+const siteImage =
+  "https://marttex.net/thumbnail.png";
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -55,13 +62,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Mart Tex — Bangladesh Garment Buying House" },
       { property: "og:description", content: "Mart Tex is a trusted Bangladesh buying house — ethical sourcing, production and quality assurance for global fashion brands." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: siteUrl },
+      { property: "og:site_name", content: "Mart Tex" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Mart Tex — Bangladesh Garment Buying House" },
       { name: "twitter:description", content: "Mart Tex is a trusted Bangladesh buying house — ethical sourcing, production and quality assurance for global fashion brands." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2b3356f2-032f-4d10-9405-1a401e61d91e/id-preview-880f56c3--f2a35a8b-c1bc-4a04-a87a-7ef079ae797c.lovable.app-1778955039972.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2b3356f2-032f-4d10-9405-1a401e61d91e/id-preview-880f56c3--f2a35a8b-c1bc-4a04-a87a-7ef079ae797c.lovable.app-1778955039972.png" },
+      { property: "og:image", content: "https://marttex.net/thumbnail.png" },
+      { property: "og:image:secure_url", content: siteImage },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:image", content: "https://marttex.net/thumbnail.png" },
     ],
     links: [
+      { rel: "canonical", href: siteUrl },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: `${API_URL}/api/favicon` },
       { rel: "shortcut icon", href: `${API_URL}/api/favicon` },
