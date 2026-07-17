@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { ApiError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEnquiryEmail } from "../utils/mailer.js";
 import { getPagination } from "../utils/pagination.js";
@@ -6,15 +7,18 @@ import { getPagination } from "../utils/pagination.js";
 export const createEnquiry = asyncHandler(async (req, res) => {
   const enquiry = await prisma.enquiry.create({ data: req.validated.body });
 
-  sendEnquiryEmail(enquiry)
-    .then((email) => {
-      if (!email.sent) console.warn("Enquiry email skipped:", email.reason);
-    })
-    .catch((error) => {
-      console.error("Enquiry email failed:", error);
-    });
+  try {
+    const email = await sendEnquiryEmail(enquiry);
+    if (!email.sent) {
+      throw new ApiError(502, email.reason || "Enquiry saved, but email was not sent.");
+    }
+  } catch (error) {
+    console.error("Enquiry email failed:", error);
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(502, error.message || "Enquiry saved, but email was not sent.");
+  }
 
-  res.status(201).json({ success: true, data: enquiry, email: { queued: true } });
+  res.status(201).json({ success: true, data: enquiry, email: { sent: true } });
 });
 
 export const listEnquiries = asyncHandler(async (req, res) => {
