@@ -33,6 +33,7 @@ export const env = {
   smtpSecure: String(process.env.SMTP_SECURE || "true") === "true",
   smtpUser: process.env.SMTP_USER || "info@marttex.net",
   smtpPass: process.env.SMTP_PASS || "",
+  resendApiKey: process.env.RESEND_API_KEY || process.env.SMTP_PASS || "",
   mailFrom: process.env.MAIL_FROM || "info@marttex.net",
   mailTo: process.env.MAIL_TO || "info@marttex.net",
   smtpTimeoutMs: Number(process.env.SMTP_TIMEOUT_MS || 10000),

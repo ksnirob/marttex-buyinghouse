@@ -2,6 +2,46 @@ import { env } from "../config/env.js";
 
 let transporter;
 
+function splitEmails(value = "") {
+  return String(value)
+    .split(",")
+    .map((email) => email.trim())
+    .filter(Boolean);
+}
+
+async function sendWithResendApi({ from, to, replyTo, subject, text, html }) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), env.smtpTimeoutMs);
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: splitEmails(to),
+        reply_to: replyTo ? [replyTo] : undefined,
+        subject,
+        text,
+        html,
+      }),
+      signal: controller.signal,
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(result.message || `Resend API request failed with status ${response.status}.`);
+    }
+
+    return result;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function getTransporter() {
   if (!transporter) {
     const { default: nodemailer } = await import("nodemailer");
@@ -31,8 +71,8 @@ function escapeHtml(value = "") {
 }
 
 export async function sendEnquiryEmail(enquiry) {
-  if (!env.smtpPass) {
-    return { sent: false, reason: "SMTP_PASS is not configured." };
+  if (!env.smtpPass && !env.resendApiKey) {
+    return { sent: false, reason: "Email credentials are not configured." };
   }
 
   const subject = `New Mart Tex enquiry from ${enquiry.name}`;
@@ -68,19 +108,30 @@ export async function sendEnquiryEmail(enquiry) {
     </div>
   `;
 
-  await Promise.race([
-    (await getTransporter()).sendMail({
+  if (env.resendApiKey && env.smtpHost === "smtp.resend.com") {
+    await sendWithResendApi({
       from: env.mailFrom,
       to: env.mailTo,
       replyTo: enquiry.email,
       subject,
       text,
       html,
-    }),
-    new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("SMTP request timed out.")), env.smtpTimeoutMs);
-    }),
-  ]);
+    });
+  } else {
+    await Promise.race([
+      (await getTransporter()).sendMail({
+        from: env.mailFrom,
+        to: env.mailTo,
+        replyTo: enquiry.email,
+        subject,
+        text,
+        html,
+      }),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("SMTP request timed out.")), env.smtpTimeoutMs);
+      }),
+    ]);
+  }
 
   return { sent: true };
 }
