@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Boxes, ChevronDown, CircleCheck, Contact, FilePlus2, GripVertical, ImagePlus, Images, LogOut, Menu, MessageSquareQuote, Newspaper, Plus, RefreshCw, Save, Settings, Tags, Trash2, Type, Video, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { API_URL } from "@/lib/site-api";
 
 export const Route = createFileRoute("/admin")({
   component: AdminDashboard,
@@ -9,9 +10,6 @@ export const Route = createFileRoute("/admin")({
   }),
 });
 
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://127.0.0.1:4000";
 const tokenKey = "martxbd_admin_token";
 const adminTabKey = "martxbd_admin_tab";
 const adminPageKey = "martxbd_admin_page_key";
@@ -123,8 +121,10 @@ function AdminDashboard() {
 
   async function api<T>(path: string, options: RequestInit = {}) {
     const headers = new Headers(options.headers);
-    if (!(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
-    if (token) headers.set("Authorization", `Bearer ${token}`);
+    const method = (options.method || "GET").toUpperCase();
+    const hasBody = options.body != null;
+    if (hasBody && !(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
+    if (token && method !== "GET") headers.set("Authorization", `Bearer ${token}`);
 
     let response: Response;
     try {
