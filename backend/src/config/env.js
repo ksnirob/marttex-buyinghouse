@@ -27,6 +27,7 @@ export const env = {
   adminEmail: process.env.ADMIN_EMAIL || "admin@example.com",
   adminPassword: process.env.ADMIN_PASSWORD || "change-me-now",
   maxUploadMb: Number(process.env.MAX_UPLOAD_MB || 5),
+  maxVideoUploadMb: Number(process.env.MAX_VIDEO_UPLOAD_MB || process.env.MAX_UPLOAD_MB || 100),
   smtpHost: process.env.SMTP_HOST || "mail.marttex.net",
   smtpPort: Number(process.env.SMTP_PORT || 465),
   smtpSecure: String(process.env.SMTP_SECURE || "true") === "true",

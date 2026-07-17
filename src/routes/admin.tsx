@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Boxes, ChevronDown, CircleCheck, Contact, FilePlus2, GripVertical, ImagePlus, Images, LogOut, Menu, MessageSquareQuote, Newspaper, Plus, RefreshCw, Save, Settings, Tags, Trash2, Type, X } from "lucide-react";
+import { ArrowLeft, Boxes, ChevronDown, CircleCheck, Contact, FilePlus2, GripVertical, ImagePlus, Images, LogOut, Menu, MessageSquareQuote, Newspaper, Plus, RefreshCw, Save, Settings, Tags, Trash2, Type, Video, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/admin")({
@@ -13,6 +13,18 @@ const API_URL =
   import.meta.env.VITE_API_URL ||
   "http://127.0.0.1:4000";
 const tokenKey = "martxbd_admin_token";
+const adminTabKey = "martxbd_admin_tab";
+const adminPageKey = "martxbd_admin_page_key";
+
+type AdminTab = "all-products" | "categories" | "menu" | "contact" | "site-options" | "pages" | "news" | "testimonials" | "brands";
+
+const adminTabs: AdminTab[] = ["all-products", "categories", "menu", "contact", "site-options", "pages", "news", "testimonials", "brands"];
+
+function readStoredAdminTab() {
+  if (typeof window === "undefined") return "all-products";
+  const stored = window.localStorage.getItem(adminTabKey) as AdminTab | null;
+  return stored && adminTabs.includes(stored) ? stored : "all-products";
+}
 
 function adminAssetUrl(value?: string) {
   if (!value) return "";
@@ -81,13 +93,20 @@ type HomeSlide = {
 };
 
 type GalleryImage = {
+  type?: "image";
   url: string;
   alt: string;
 };
 
+type GalleryVideo = {
+  type: "video";
+  url: string;
+  title: string;
+};
+
 function AdminDashboard() {
   const [token, setToken] = useState("");
-  const [tab, setTab] = useState<"all-products" | "categories" | "menu" | "contact" | "site-options" | "pages" | "news" | "testimonials" | "brands">("all-products");
+  const [tab, setTab] = useState<AdminTab>(() => readStoredAdminTab());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -116,6 +135,10 @@ function AdminDashboard() {
     const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      if (response.status === 401) {
+        window.localStorage.removeItem(tokenKey);
+        setToken("");
+      }
       throw new Error(result.message || "Request failed.");
     }
 
@@ -164,7 +187,8 @@ function AdminDashboard() {
     setToken("");
   }
 
-  function selectTab(nextTab: typeof tab) {
+  function selectTab(nextTab: AdminTab) {
+    window.localStorage.setItem(adminTabKey, nextTab);
     setTab(nextTab);
     setSidebarOpen(false);
   }
@@ -285,9 +309,9 @@ function AdminDashboard() {
                 {tab === "menu" && <MenuPanel api={api} settings={settings} setSettings={setSettings} setMessage={setMessage} />}
                 {tab === "site-options" && <SiteOptionsPanel api={api} settings={settings} setSettings={setSettings} setMessage={setMessage} />}
                 {tab === "pages" && (
-                  <PagesPanel api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />
+                  <PagesPanel api={api} blocks={blocks} reload={loadData} setMessage={setMessage} onBack={() => selectTab("all-products")} />
                 )}
-                {tab === "news" && <ContentCollectionPanel kind="news" blockKey="site-news" api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />}
+                {tab === "news" && <ContentCollectionPanel kind="news" blockKey="site-news" api={api} blocks={blocks} reload={loadData} setMessage={setMessage} onBack={() => selectTab("all-products")} />}
                 {tab === "testimonials" && <ContentCollectionPanel kind="testimonials" blockKey="home-testimonials" api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />}
                 {tab === "brands" && <ContentCollectionPanel kind="brands" blockKey="home-brands" api={api} blocks={blocks} reload={loadData} setMessage={setMessage} />}
               </>
@@ -752,18 +776,26 @@ const editablePages = [
   { key: "page-contact-header", label: "Contact" },
 ];
 
+function readStoredPageKey() {
+  if (typeof window === "undefined") return editablePages[0].key;
+  const stored = window.localStorage.getItem(adminPageKey);
+  return editablePages.some((page) => page.key === stored) ? stored : editablePages[0].key;
+}
+
 function PagesPanel({
   api,
   blocks,
   reload,
   setMessage,
+  onBack,
 }: {
   api: <T>(path: string, options?: RequestInit) => Promise<T>;
   blocks: ContentBlock[];
   reload: () => Promise<void>;
   setMessage: (message: string) => void;
+  onBack: () => void;
 }) {
-  const [selectedKey, setSelectedKey] = useState(editablePages[0].key);
+  const [selectedKey, setSelectedKey] = useState(() => readStoredPageKey());
   const selected = blocks.find((block) => block.key === selectedKey) || {
     key: selectedKey,
     isActive: true,
@@ -773,9 +805,16 @@ function PagesPanel({
   const isHome = selectedKey === "page-home";
   const isGallery = selectedKey === "page-gallery-header";
   const slides = (draft.items || []) as HomeSlide[];
-  const galleryImages = (draft.items || []) as GalleryImage[];
+  const galleryMedia = (draft.items || []) as (GalleryImage | GalleryVideo)[];
+  const galleryVideos = galleryMedia.filter((item): item is GalleryVideo => item.type === "video");
+  const galleryImages = galleryMedia.filter((item): item is GalleryImage => item.type !== "video");
 
   useEffect(() => setDraft(selected), [selectedKey, blocks]);
+
+  function selectPage(nextKey: string) {
+    window.localStorage.setItem(adminPageKey, nextKey);
+    setSelectedKey(nextKey);
+  }
 
   async function uploadThumbnail(file: File) {
     const body = new FormData();
@@ -821,10 +860,29 @@ function PagesPanel({
         method: "POST",
         body,
       });
-      uploaded.push({ url: result.data.url, alt: file.name.replace(/\.[^.]+$/, "") });
+      uploaded.push({ type: "image", url: result.data.url, alt: file.name.replace(/\.[^.]+$/, "") });
     }
-    setDraft({ ...draft, items: [...galleryImages, ...uploaded] });
+    setDraft({ ...draft, items: [...galleryVideos, ...galleryImages, ...uploaded] });
     setMessage(`${uploaded.length} gallery image${uploaded.length === 1 ? "" : "s"} uploaded. Save the page to publish.`);
+  }
+
+  async function uploadPageGalleryVideos(files: File[]) {
+    try {
+      const uploaded: GalleryVideo[] = [];
+      for (const file of files) {
+        const body = new FormData();
+        body.append("video", file);
+        const result = await api<{ data: { url: string } }>("/api/uploads/video", {
+          method: "POST",
+          body,
+        });
+        uploaded.push({ type: "video", url: result.data.url, title: file.name.replace(/\.[^.]+$/, "") });
+      }
+      setDraft({ ...draft, items: [...galleryVideos, ...uploaded, ...galleryImages] });
+      setMessage(`${uploaded.length} gallery video${uploaded.length === 1 ? "" : "s"} uploaded. Save the page to publish.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Video upload failed.");
+    }
   }
 
   async function savePage(event: React.FormEvent) {
@@ -848,12 +906,15 @@ function PagesPanel({
   return (
     <section className="grid gap-6 lg:grid-cols-[280px_1fr]">
       <div className="rounded-lg border border-border bg-card p-4">
+        <button type="button" onClick={onBack} className="btn-outline mb-4 w-fit">
+          <ArrowLeft className="h-4 w-4" /> Back
+        </button>
         <PanelTitle title="Pages" action="Choose a page" />
         <div className="mt-4 grid gap-2">
           {editablePages.map((page) => (
             <button
               key={page.key}
-              onClick={() => setSelectedKey(page.key)}
+              onClick={() => selectPage(page.key)}
               className={`rounded-lg border px-3 py-2 text-left text-sm ${
                 selectedKey === page.key ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background"
               }`}
@@ -972,6 +1033,66 @@ function PagesPanel({
               <TextArea label="Description" value={draft.body || ""} onChange={(value) => setDraft({ ...draft, body: value })} />
               {isGallery && (
                 <div className="grid gap-4 rounded-xl border border-border bg-background p-4">
+                  <div className="grid gap-4 rounded-lg border border-border bg-card p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h3 className="font-semibold">Gallery videos</h3>
+                        <p className="text-xs text-muted-foreground">{galleryVideos.length} videos</p>
+                      </div>
+                      <label className="btn-outline cursor-pointer">
+                        <Video className="h-4 w-4" /> Add videos
+                        <input
+                          className="hidden"
+                          type="file"
+                          accept="video/mp4,video/webm,video/ogg,video/quicktime,.mp4,.webm,.ogv,.ogg,.mov"
+                          multiple
+                          onChange={(event) => {
+                            const files = Array.from(event.target.files || []);
+                            if (files.length) void uploadPageGalleryVideos(files);
+                            event.target.value = "";
+                          }}
+                        />
+                      </label>
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      {galleryVideos.map((video, videoIndex) => (
+                        <div key={`${video.url}-${videoIndex}`} className="relative overflow-hidden rounded-lg border border-border">
+                          <video src={adminAssetUrl(video.url)} controls preload="metadata" className="aspect-video w-full bg-black object-cover" />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setDraft({
+                                ...draft,
+                                items: [
+                                  ...galleryVideos.filter((_, index) => index !== videoIndex),
+                                  ...galleryImages,
+                                ],
+                              })
+                            }
+                            className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white text-destructive shadow"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                          <input
+                            value={video.title}
+                            onChange={(event) =>
+                              setDraft({
+                                ...draft,
+                                items: [
+                                  ...galleryVideos.map((item, index) =>
+                                    index === videoIndex ? { ...item, title: event.target.value } : item,
+                                  ),
+                                  ...galleryImages,
+                                ],
+                              })
+                            }
+                            className="w-full border-t border-border bg-white px-2 py-2 text-xs"
+                            placeholder="Video title"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <h3 className="font-semibold">Gallery images</h3>
@@ -1001,7 +1122,10 @@ function PagesPanel({
                           onClick={() =>
                             setDraft({
                               ...draft,
-                              items: galleryImages.filter((_, index) => index !== imageIndex),
+                              items: [
+                                ...galleryVideos,
+                                ...galleryImages.filter((_, index) => index !== imageIndex),
+                              ],
                             })
                           }
                           className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white text-destructive shadow"
@@ -1013,9 +1137,12 @@ function PagesPanel({
                           onChange={(event) =>
                             setDraft({
                               ...draft,
-                              items: galleryImages.map((item, index) =>
-                                index === imageIndex ? { ...item, alt: event.target.value } : item,
-                              ),
+                              items: [
+                                ...galleryVideos,
+                                ...galleryImages.map((item, index) =>
+                                  index === imageIndex ? { ...item, alt: event.target.value } : item,
+                                ),
+                              ],
                             })
                           }
                           className="w-full border-t border-border bg-white px-2 py-2 text-xs"
@@ -1081,6 +1208,7 @@ function ContentCollectionPanel({
   blocks,
   reload,
   setMessage,
+  onBack,
 }: {
   kind: "news" | "testimonials" | "brands";
   blockKey: string;
@@ -1088,6 +1216,7 @@ function ContentCollectionPanel({
   blocks: ContentBlock[];
   reload: () => Promise<void>;
   setMessage: (message: string) => void;
+  onBack?: () => void;
 }) {
   const source = blocks.find((block) => block.key === blockKey);
   const [items, setItems] = useState<Record<string, string>[]>(
@@ -1174,6 +1303,11 @@ function ContentCollectionPanel({
 
   return (
     <section className="max-w-5xl rounded-xl border border-border bg-card p-4 sm:p-5">
+      {onBack && (
+        <button type="button" onClick={onBack} className="btn-outline mb-4 w-fit">
+          <ArrowLeft className="h-4 w-4" /> Back
+        </button>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PanelTitle title={labels[kind]} />
         {kind === "brands" ? (

@@ -16,3 +16,19 @@ export const uploadSingleImage = asyncHandler(async (req, res) => {
     },
   });
 });
+
+export const uploadSingleVideo = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    throw new ApiError(422, "Video file is required.");
+  }
+
+  res.status(201).json({
+    success: true,
+    data: {
+      filename: req.file.filename,
+      url: `/uploads/${req.file.filename}`,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+    },
+  });
+});
